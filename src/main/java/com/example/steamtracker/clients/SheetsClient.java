@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import com.google.auth.http.HttpCredentialsAdapter;
 import org.springframework.stereotype.Service;
 
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
@@ -21,8 +22,11 @@ public class SheetsClient {
 
     public SheetsClient() {
         try {
-            InputStream credentialsStream = getClass().getClassLoader().getResourceAsStream("steamsync-495415-54fb9885729f.json");
-
+            InputStream credentialsStream =
+                    new FileInputStream(
+                            System.getProperty("user.home")
+                                    + "/credentials/steamsync-495415-54fb9885729f.json"
+                    );
             GoogleCredentials credentials = GoogleCredentials.fromStream(credentialsStream)
                     .createScoped(Collections.singleton(SheetsScopes.SPREADSHEETS));
 
