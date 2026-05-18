@@ -14,19 +14,19 @@ public class SteamScheduler {
     private final OwnedGamesService ownedGamesService;
     private final RecentGamesService recentGamesService;
 
-    @Scheduled(cron = "0 0 12 * * *",
+    @Scheduled(cron = "0 0 * * * *",
     zone = "America/Sao_Paulo")
     public void syncWishlistJob() {
         wishlistService.syncWishlist();
     }
 
-    @Scheduled(cron = "0 0 0 * * 7",
+    @Scheduled(cron = "0 0 * * * *",
             zone = "America/Sao_Paulo")
     public void syncOwnedGamesJob() {
         ownedGamesService.syncOwnedGames();
     }
 
-    @Scheduled(cron = "0 0 18,20,22,0,2 * * *",
+    @Scheduled(cron = "0 0 * * * *",
             zone = "America/Sao_Paulo")
     public void syncRecentGamesService() {
         recentGamesService.syncRecentGames();
