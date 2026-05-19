@@ -31,8 +31,8 @@ public class StoreService {
 
             double finalPrice = priceOverview.path("final").asDouble() / 100.0;
             double originalPrice = priceOverview.path("initial").asDouble() / 100.0;
-            int discount = priceOverview.path("discount_percent").asInt();
-
+            Double discount = priceOverview.path("discount_percent").asDouble();
+            System.out.println(discount);
             return new GamePrice(name, finalPrice, originalPrice, discount);
 
         }catch (Exception e){

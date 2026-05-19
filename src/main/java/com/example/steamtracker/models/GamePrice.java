@@ -4,9 +4,9 @@ public class GamePrice {
     private String name;
     private double finalPrice;
     private double originalPrice;
-    private int discount;
+    private Double discount;
 
-    public GamePrice(String name, double finalPrice, double originalPrice, int discount){
+    public GamePrice(String name, double finalPrice, double originalPrice, Double discount){
         this.name = name;
         this.finalPrice = finalPrice;
         this.originalPrice = originalPrice;
@@ -25,7 +25,7 @@ public class GamePrice {
         return originalPrice;
     }
 
-    public int getDiscount() {
+    public Double getDiscount() {
         return discount;
     }
 }

@@ -5,7 +5,6 @@ import com.example.steamtracker.clients.StoreClient;
 import com.example.steamtracker.models.GamePrice;
 import com.example.steamtracker.models.GameSearchResult;
 import com.example.steamtracker.models.WishlistModel;
-import com.google.api.services.sheets.v4.model.ValueRange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -120,9 +119,9 @@ public class WishlistService {
                     List.of(
                             appId,
                             price.getName(),
-                            "R$ " + price.getFinalPrice(),
-                            price.getDiscount() + "%"
-                    )
+                            price.getFinalPrice(),
+                            String.format("%.0f%%", price.getDiscount())
+                            )
             );
 
             sheetsClient.appendToSheet(
@@ -178,7 +177,13 @@ public class WishlistService {
             return;
         }
 
-        List<List<Object>> values = List.of(List.of(appId, price.getName(), "R$" + price.getFinalPrice(), price.getDiscount()));
+        List<List<Object>> values = List.of(
+                List.of(
+                        appId,
+                        price.getName(),
+                        price.getFinalPrice(),
+                        String.format("%.0f%%", price.getDiscount())
+                ));
 
         sheetsClient.writeLocal(
                 SPREADSHEET_ID,
