@@ -36,11 +36,26 @@ public class WishlistService {
         List<Integer> sheetWishlist = getWishlistFromSheet();
 
         for(WishlistModel game : currentWishlist) {
-            if(!sheetWishlist.contains(game.getAppId())){
-                System.out.println("New game found: " + game);
 
-                processNewGame(game.getAppId());
+            int appId = game.getAppId();
+
+            String gameDetails = storeClient.getGameDetails(appId);
+
+            GamePrice price = storeService.parsePrice(gameDetails, appId);
+
+            if (price == null) continue;
+
+            if (!sheetWishlist.contains(appId)) {
+
+                System.out.println("New game found: " + appId);
+
+                processNewGame(appId);
+            } else {
+                System.out.println("Updating game " + appId + " Name: " + price.getName());
+                updateWishlistGame(appId, price);
             }
+
+
         }
 
         System.out.println("Syncing finalized...");
@@ -76,6 +91,7 @@ public class WishlistService {
 
     public void processNewGame(int gameId) {
         try{
+
             String searchJson = storeClient.searchGame(gameId);
 
             GameSearchResult result = steamService.resolveAppId(searchJson);
@@ -109,5 +125,57 @@ public class WishlistService {
         }catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public Integer findRowByAppId(int appId){
+        try {
+            var response = sheetsClient.getValues(SPREADSHEET_ID, "Test_WishList!A2:A");
+
+            if(response == null || response.getValues() == null) {
+                System.err.println("Sheet is empty...");
+                return null;
+            }
+
+            int rowIndex = 2;
+
+            for(List<Object> row : response.getValues()){
+                if(!row.isEmpty()) {
+                    int sheetAppId = Integer.parseInt(row.get(0).toString());
+
+                    if(sheetAppId == 0 || sheetAppId < 0){
+                        System.err.println("App ID is invalid or empty");
+                        return null;
+                    }
+
+                    if(sheetAppId == appId) {
+                        return rowIndex;
+                    }
+                }
+
+                rowIndex++;
+            }
+
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public void updateWishlistGame(int appId, GamePrice price) {
+        Integer row = findRowByAppId(appId);
+
+        if(row == null) {
+            System.err.println("Update Failed row is null... Check findRowByAppId response...");
+            return;
+        }
+
+        List<List<Object>> values = List.of(List.of(appId, price.getName(), "R$" + price.getFinalPrice(), price.getDiscount()));
+
+        sheetsClient.writeLocal(
+                SPREADSHEET_ID,
+                "Test_WishList!A" + row + ":D" + row,
+                values
+        );
     }
 }
