@@ -5,6 +5,7 @@ import com.example.steamtracker.clients.StoreClient;
 import com.example.steamtracker.models.GamePrice;
 import com.example.steamtracker.models.GameSearchResult;
 import com.example.steamtracker.models.WishlistModel;
+import com.google.api.services.sheets.v4.model.ValueRange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ public class WishlistService {
     private SteamService steamService;
 
     private final String SPREADSHEET_ID = System.getenv("SPREADSHEET_ID");
+
     @Autowired
     private StoreService storeService;
 
@@ -36,7 +38,6 @@ public class WishlistService {
         List<Integer> sheetWishlist = getWishlistFromSheet();
 
         for(WishlistModel game : currentWishlist) {
-
             int appId = game.getAppId();
 
             String gameDetails = storeClient.getGameDetails(appId);
@@ -54,8 +55,15 @@ public class WishlistService {
                 System.out.println("Updating game " + appId + " Name: " + price.getName());
                 updateWishlistGame(appId, price);
             }
+        }
 
+        List<Integer> currentSteamIds = getCurrentWishlistAppIds(currentWishlist);
 
+        for (Integer sheetAppId : sheetWishlist) {
+            if(!currentSteamIds.contains(sheetAppId)) {
+
+                removeGameFromWishlist(sheetAppId);
+            }
         }
 
         System.out.println("Syncing finalized...");
@@ -177,5 +185,26 @@ public class WishlistService {
                 "Test_WishList!A" + row + ":D" + row,
                 values
         );
+    }
+
+    public void removeGameFromWishlist(int appId) {
+        Integer row = findRowByAppId(appId);
+
+        if (row == null) return;
+
+        sheetsClient.clearRow(
+                SPREADSHEET_ID,
+                "Test_WishList!A" + row + ":D" + row);
+
+        System.out.println("Removed Game: " + appId);
+    }
+
+    public List<Integer> getCurrentWishlistAppIds(List<WishlistModel> wishList){
+        List<Integer> ids = new ArrayList<>();
+
+        for(WishlistModel game : wishList) {
+            ids.add(game.getAppId());
+        }
+        return ids;
     }
 }

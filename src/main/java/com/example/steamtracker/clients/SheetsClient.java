@@ -52,9 +52,12 @@ public class SheetsClient {
         }
     }
 
-    public ValueRange getValues(String SPREADSHEET_ID, String range){
+    public ValueRange getValues(
+            String spreadSheetId,
+            String range
+    ){
         try{
-            return sheetsService.spreadsheets().values().get(SPREADSHEET_ID,range).execute();
+            return sheetsService.spreadsheets().values().get(spreadSheetId,range).execute();
 
         }catch (Exception e) {
             e.printStackTrace();
@@ -62,7 +65,11 @@ public class SheetsClient {
         }
     }
 
-    public void appendToSheet(String spreadsheetId, String range, List<List<Object>> values) {
+    public void appendToSheet(
+            String spreadsheetId,
+            String range,
+            List<List<Object>> values
+    ) {
         try {
             ValueRange body = new ValueRange().setValues(values);
 
@@ -72,6 +79,22 @@ public class SheetsClient {
                     .execute();
 
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void clearRow(String spreadsheetId, String range) {
+        try{
+            ValueRange body = new ValueRange()
+                    .setValues(List.of(List.of("","","","")));
+
+            sheetsService.spreadsheets().values()
+                    .update(spreadsheetId, range, body)
+                    .setValueInputOption("RAW")
+                    .execute();
+
+        }catch (Exception e) {
+            System.err.println("Clearing row not possible...");
             e.printStackTrace();
         }
     }
