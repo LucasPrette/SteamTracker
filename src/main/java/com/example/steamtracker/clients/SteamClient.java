@@ -67,25 +67,38 @@ public class SteamClient {
     }
 
     public String getAllGames() {
-        try{
-            String url = "https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/" +
-                    "?key=" + API_KEY +
-                    "&steamid="+ STEAM_ID + "&include_appinfo=True";
+        for(int attempt = 1; attempt <= 3; attempt ++){
+            try{
+                String url = "https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/" +
+                        "?key=" + API_KEY +
+                        "&steamid="+ STEAM_ID + "&include_appinfo=True";
 
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .GET()
-                    .build();
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .GET()
+                        .build();
 
-            HttpResponse<String> response = httpClient
-                    .send(request, HttpResponse.BodyHandlers.ofString());
+                HttpResponse<String> response = httpClient
+                        .send(request, HttpResponse.BodyHandlers.ofString());
 
-            return response.body();
+                return response.body();
 
-        } catch (Exception e){
-            logger.error("[STEAM-003] Failed to get owned games...", e);
-            return null;
+            } catch (Exception e){
+                logger.warn("[STEAM-003] Attempt {} failed fetching owned games", attempt);
+
+                if(attempt == 3) {
+                    logger.error(
+                            "[STEAM-003] Failed to get owned games after retries",
+                            e
+                    );
+                }
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException ignored) {
+                }
+            }
         }
+        return null;
     }
 
 }
