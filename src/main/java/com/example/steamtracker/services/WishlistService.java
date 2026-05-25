@@ -5,6 +5,8 @@ import com.example.steamtracker.clients.StoreClient;
 import com.example.steamtracker.models.GamePrice;
 import com.example.steamtracker.models.GameSearchResult;
 import com.example.steamtracker.models.WishlistModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,57 +17,61 @@ import java.util.List;
 public class WishlistService {
     @Autowired
     private StoreClient storeClient;
-
     @Autowired
     private SheetsClient sheetsClient;
-
     @Autowired
     private SteamService steamService;
 
     private final String SPREADSHEET_ID = System.getenv("SPREADSHEET_ID");
-
     @Autowired
     private StoreService storeService;
 
+    private static final Logger logger = LoggerFactory.getLogger(WishlistService.class);
+
     public void syncWishlist() {
-        System.out.println("Running Wishlist Sync...");
+        try{
+            System.out.println("Running Wishlist Sync...");
 
-        String json = storeClient.getWishlist();
+            String json = storeClient.getWishlist();
 
-        List<WishlistModel> currentWishlist = steamService.parseWishlist(json);
+            List<WishlistModel> currentWishlist = steamService.parseWishlist(json);
 
-        List<Integer> sheetWishlist = getWishlistFromSheet();
+            List<Integer> sheetWishlist = getWishlistFromSheet();
 
-        for(WishlistModel game : currentWishlist) {
-            int appId = game.getAppId();
+            for(WishlistModel game : currentWishlist) {
+                int appId = game.getAppId();
 
-            String gameDetails = storeClient.getGameDetails(appId);
+                String gameDetails = storeClient.getGameDetails(appId);
 
-            GamePrice price = storeService.parsePrice(gameDetails, appId);
+                GamePrice price = storeService.parsePrice(gameDetails, appId);
 
-            if (price == null) continue;
+                if (price == null) continue;
 
-            if (!sheetWishlist.contains(appId)) {
+                if (!sheetWishlist.contains(appId)) {
 
-                System.out.println("New game found: " + appId);
+                    System.out.println("New game found: " + appId);
 
-                processNewGame(appId);
-            } else {
-                System.out.println("Updating game " + appId + " Name: " + price.getName());
-                updateWishlistGame(appId, price);
+                    processNewGame(appId);
+                } else {
+                    System.out.println("Updating game " + appId + " Name: " + price.getName());
+                    updateWishlistGame(appId, price);
+                }
             }
+
+            List<Integer> currentSteamIds = getCurrentWishlistAppIds(currentWishlist);
+
+            for (Integer sheetAppId : sheetWishlist) {
+                if(!currentSteamIds.contains(sheetAppId)) {
+
+                    removeGameFromWishlist(sheetAppId);
+                }
+            }
+
+            System.out.println("Syncing finalized...");
+        }catch (Exception e) {
+            logger.error("[SYNC-003] Failed to synchronize wishlist", e);
         }
 
-        List<Integer> currentSteamIds = getCurrentWishlistAppIds(currentWishlist);
-
-        for (Integer sheetAppId : sheetWishlist) {
-            if(!currentSteamIds.contains(sheetAppId)) {
-
-                removeGameFromWishlist(sheetAppId);
-            }
-        }
-
-        System.out.println("Syncing finalized...");
     }
 
     public List<Integer> getWishlistFromSheet(){
@@ -91,7 +97,7 @@ public class WishlistService {
             return games;
 
         } catch (Exception e){
-            e.printStackTrace();
+            logger.error("[SHEET-007] Failed to get wishlist from sheet",e);
             return new ArrayList<>();
         }
     }
@@ -130,7 +136,7 @@ public class WishlistService {
                     values);
 
         }catch (Exception e) {
-            e.printStackTrace();
+            logger.error("[SYNC-004] Failed to process new wishlist game", e);
         }
     }
 
@@ -163,53 +169,65 @@ public class WishlistService {
             }
 
         }catch (Exception e) {
-            e.printStackTrace();
+            logger.error("[SHEET-008] Failed to find App ID on row", e);
         }
-
         return null;
     }
 
     public void updateWishlistGame(int appId, GamePrice price) {
-        Integer row = findRowByAppId(appId);
+        try{
+            Integer row = findRowByAppId(appId);
 
-        if(row == null) {
-            System.err.println("Update Failed row is null... Check findRowByAppId response...");
-            return;
+            if (row == null) {
+                System.err.println("Update Failed row is null... Check findRowByAppId response...");
+                return;
+            }
+
+            List<List<Object>> values = List.of(
+                    List.of(
+                            appId,
+                            price.getName(),
+                            price.getFinalPrice(),
+                            String.format("%.0f%%", price.getDiscount())
+                    ));
+
+            sheetsClient.writeLocal(
+                    SPREADSHEET_ID,
+                    "Test_WishList!A" + row + ":D" + row,
+                    values
+            );
+        }catch (Exception e) {
+            logger.error("[SYNC-005] Failed to update Wishlist game", e);
         }
-
-        List<List<Object>> values = List.of(
-                List.of(
-                        appId,
-                        price.getName(),
-                        price.getFinalPrice(),
-                        String.format("%.0f%%", price.getDiscount())
-                ));
-
-        sheetsClient.writeLocal(
-                SPREADSHEET_ID,
-                "Test_WishList!A" + row + ":D" + row,
-                values
-        );
     }
 
     public void removeGameFromWishlist(int appId) {
-        Integer row = findRowByAppId(appId);
+        try{
+            Integer row = findRowByAppId(appId);
 
-        if (row == null) return;
+            if (row == null) return;
 
-        sheetsClient.clearRow(
-                SPREADSHEET_ID,
-                "Test_WishList!A" + row + ":D" + row);
+            sheetsClient.clearRow(
+                    SPREADSHEET_ID,
+                    "Test_WishList!A" + row + ":D" + row);
 
-        System.out.println("Removed Game: " + appId);
+            System.out.println("Removed Game: " + appId);
+        }catch (Exception e) {
+            logger.error("[SYNC-006] Failed to remove wishlist game", e);
+        }
     }
 
     public List<Integer> getCurrentWishlistAppIds(List<WishlistModel> wishList){
-        List<Integer> ids = new ArrayList<>();
+        try{
+            List<Integer> ids = new ArrayList<>();
 
-        for(WishlistModel game : wishList) {
-            ids.add(game.getAppId());
+            for (WishlistModel game : wishList) {
+                ids.add(game.getAppId());
+            }
+            return ids;
+        }catch (Exception e) {
+            logger.error("[SHEET-009] Failed to get Wishlist app IDs from sheet", e);
+            return new ArrayList<>();
         }
-        return ids;
     }
 }

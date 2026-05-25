@@ -1,5 +1,7 @@
 package com.example.steamtracker.clients;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
@@ -9,6 +11,7 @@ import java.net.http.HttpResponse;
 
 @Component
 public class StoreClient {
+    private static final Logger logger = LoggerFactory.getLogger(StoreClient.class);
 
     public String getGameDetails(int appId){
         try{
@@ -24,7 +27,7 @@ public class StoreClient {
             return response.body();
 
         }catch (Exception e){
-            e.printStackTrace();
+            logger.error("[STEAM-004] Failed to get game information", e);
             return null;
         }
     }
@@ -40,7 +43,7 @@ public class StoreClient {
 
             return response.body();
         } catch (Exception e){
-            e.printStackTrace();
+            logger.error("[STEAM-005] Failed to find game",e);
             return null;
         }
     }
@@ -56,7 +59,7 @@ public class StoreClient {
 
             return response.body();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("[STEAM-006] Failed to get wishlist games", e);
             return null;
         }
     }

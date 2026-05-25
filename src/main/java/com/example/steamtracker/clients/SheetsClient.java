@@ -7,6 +7,7 @@ import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import com.google.auth.http.HttpCredentialsAdapter;
 
@@ -14,10 +15,12 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
+import org.slf4j.Logger;
 
 @Component
 public class SheetsClient {
     private Sheets sheetsService;
+    private static final Logger logger = LoggerFactory.getLogger(SheetsClient.class);
 
     public SheetsClient() {
         try {
@@ -38,7 +41,7 @@ public class SheetsClient {
                     .build();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("[SHEET-001] Authentication failed", e);
         }
     }
     public void writeLocal(String spreadSheetId, String range, List<List<Object>> values){
@@ -47,7 +50,7 @@ public class SheetsClient {
 
             sheetsService.spreadsheets().values().update(spreadSheetId, range, body).setValueInputOption("RAW").execute();
         }catch (Exception e){
-            e.printStackTrace();
+            logger.error("[SHEET-002] Failed to write locally on sheet...", e);
         }
     }
 
@@ -59,7 +62,8 @@ public class SheetsClient {
             return sheetsService.spreadsheets().values().get(spreadSheetId,range).execute();
 
         }catch (Exception e) {
-            e.printStackTrace();
+            logger.error("[SHEET-003] Failed getting values from spreadsheet...", e);
+
             return null;
         }
     }
@@ -78,7 +82,8 @@ public class SheetsClient {
                     .execute();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("[SHEET-004] Appending to sheet failed...", e);
+
         }
     }
 
@@ -93,20 +98,21 @@ public class SheetsClient {
                     .execute();
 
         }catch (Exception e) {
-            System.err.println("Clearing row not possible...");
-            e.printStackTrace();
+            logger.error("[SHEET-005] Clearing row not possible...",e);
+
         }
     }
 
     public void clearRange(String spreadsheetId, String range){
         try{
-            ValueRange body = new ValueRange().setValues(List.of());
-
-            sheetsService.spreadsheets().values().clear(spreadsheetId,range, new ClearValuesRequest()).execute();
+            sheetsService.spreadsheets().values().clear(
+                    spreadsheetId,
+                    range,
+                    new ClearValuesRequest()).execute();
 
         } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("Error trying to clear Sheet range selection..");
+            logger.error("[SHEET-006] Failed trying to clear Sheet range selection...",e);
+
         }
     }
 }

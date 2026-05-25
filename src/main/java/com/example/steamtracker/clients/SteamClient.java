@@ -1,5 +1,7 @@
 package com.example.steamtracker.clients;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
@@ -12,6 +14,7 @@ public class SteamClient {
 
     private final String API_KEY = System.getenv("STEAM_API_KEY");
     private final String STEAM_ID = System.getenv("STEAM_ID");
+    private static final Logger logger = LoggerFactory.getLogger(SteamClient.class);
 
     public String getPlayerAchievements(int appId) {
         try {
@@ -31,7 +34,8 @@ public class SteamClient {
             return response.body();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("[STEAM-001] Failed to get player achievements...", e);
+
             return null;
         }
     }
@@ -53,7 +57,7 @@ public class SteamClient {
             return response.body();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("[STEAM-002] Failed to get Recent Played games ...", e);
             return null;
         }
     }
@@ -75,7 +79,7 @@ public class SteamClient {
             return response.body();
 
         } catch (Exception e){
-            e.printStackTrace();
+            logger.error("[STEAM-003] Failed to get owned games...", e);
             return null;
         }
     }

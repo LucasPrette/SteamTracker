@@ -6,6 +6,8 @@ import com.example.steamtracker.entities.GameLibraryEntry;
 import com.example.steamtracker.mappers.SteamGameMapper;
 import com.example.steamtracker.models.AchievementStats;
 import com.example.steamtracker.models.GameStats;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +19,8 @@ public class RecentGamesService {
 
     @Autowired
     private SteamClient steamClient;
-
     @Autowired
     private SteamService steamService;
-
     @Autowired
     private SheetsClient sheetsClient;
 
@@ -28,44 +28,51 @@ public class RecentGamesService {
     @Autowired
     private SteamGameMapper steamGameMapper;
 
+    private static final Logger logger = LoggerFactory.getLogger(RecentGamesService.class);
 
     public void syncRecentGames () {
-        String json = steamClient.getRecentPlayedGames();
 
-        List<GameStats> games = steamService.parseRecentGames(json);
-        List<List<Object>> playingValues = new ArrayList<>();
+        try{
+            String json = steamClient.getRecentPlayedGames();
 
-        for (GameStats game : games) {
-            String achievementJson = steamClient.getPlayerAchievements(game.getAppId());
-            AchievementStats stats = steamService.getStats(achievementJson);
+            List<GameStats> games = steamService.parseRecentGames(json);
+            List<List<Object>> playingValues = new ArrayList<>();
 
-            GameLibraryEntry entry = steamGameMapper.toGameLibrary(game, stats);
+            for (GameStats game : games) {
+                String achievementJson = steamClient.getPlayerAchievements(game.getAppId());
+                AchievementStats stats = steamService.getStats(achievementJson);
 
-            if(game.getPlayTime2Weeks() > 0) {
-                playingValues.add(List.of(
-                        entry.getGame().getExternalID(),
-                        entry.getGame().getGameName(),
-                        entry.getRecentPlaytime(),
-                        entry.getAchievements().getUnlocked(),
-                        entry.getAchievements().getTotal(),
-                        String.format(
-                                "%.0f%%",
-                                entry.getAchievements().getCompletionPercentage()
-                        )
-                ));
+                GameLibraryEntry entry = steamGameMapper.toGameLibrary(game, stats);
+
+                if(game.getPlayTime2Weeks() > 0) {
+                    playingValues.add(List.of(
+                            entry.getGame().getExternalID(),
+                            entry.getGame().getGameName(),
+                            entry.getRecentPlaytime(),
+                            entry.getAchievements().getUnlocked(),
+                            entry.getAchievements().getTotal(),
+                            String.format(
+                                    "%.0f%%",
+                                    entry.getAchievements().getCompletionPercentage()
+                            )
+                    ));
+                }
+
             }
 
+            sheetsClient.clearRange(
+                    SPREADSHEET_ID,
+                    "Test_Playing!A2:G"
+            );
+
+            sheetsClient.writeLocal(
+                    SPREADSHEET_ID,
+                    "Test_Playing!A2",
+                    playingValues
+            );
+        } catch (Exception e) {
+            logger.error("[SYNC-002] Failed to synchronize Recent Games", e);
         }
 
-        sheetsClient.clearRange(
-                SPREADSHEET_ID,
-                "Test_Playing!A2:G"
-        );
-
-        sheetsClient.writeLocal(
-                SPREADSHEET_ID,
-                "Test_Playing!A2",
-                playingValues
-        );
     }
 }

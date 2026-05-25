@@ -6,6 +6,8 @@ import com.example.steamtracker.entities.GameLibraryEntry;
 import com.example.steamtracker.mappers.SteamGameMapper;
 import com.example.steamtracker.models.AchievementStats;
 import com.example.steamtracker.models.GameStats;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,44 +25,50 @@ public class OwnedGamesService {
     private final String SPREADSHEET_ID = System.getenv("SPREADSHEET_ID");
     @Autowired
     private SteamGameMapper steamGameMapper;
+    private static final Logger logger = LoggerFactory.getLogger(OwnedGamesService.class);
 
     public void syncOwnedGames() {
-        String ownedGamesJson = steamClient.getAllGames();
+        try{
+            String ownedGamesJson = steamClient.getAllGames();
 
-        List<GameStats> ownedGamesStats = steamService.parseOwnedGames(ownedGamesJson);
+            List<GameStats> ownedGamesStats = steamService.parseOwnedGames(ownedGamesJson);
 
-        List<List<Object>> ownedGamesList = new ArrayList<>();
+            List<List<Object>> ownedGamesList = new ArrayList<>();
 
-        for(GameStats game : ownedGamesStats){
-            String achievementJson = steamClient.getPlayerAchievements(game.getAppId());
-            AchievementStats stats = steamService.getStats(achievementJson);
+            for(GameStats game : ownedGamesStats){
+                String achievementJson = steamClient.getPlayerAchievements(game.getAppId());
+                AchievementStats stats = steamService.getStats(achievementJson);
 
-            GameLibraryEntry entry = steamGameMapper.toGameLibrary(game, stats);
+                GameLibraryEntry entry = steamGameMapper.toGameLibrary(game, stats);
 
-            ownedGamesList.add(
-                    List.of(
-                            entry.getGame().getExternalID(),
-                            entry.getGame().getGameName(),
-                            entry.getPlaytimeForever(),
-                            entry.getAchievements().getUnlocked(),
-                            entry.getAchievements().getTotal(),
-                            String.format(
-                                    "%.0f%%",
-                                    entry.getAchievements()
-                                            .getCompletionPercentage()
-                            )
-            ));
+                ownedGamesList.add(
+                        List.of(
+                                entry.getGame().getExternalID(),
+                                entry.getGame().getGameName(),
+                                entry.getPlaytimeForever(),
+                                entry.getAchievements().getUnlocked(),
+                                entry.getAchievements().getTotal(),
+                                String.format(
+                                        "%.0f%%",
+                                        entry.getAchievements()
+                                                .getCompletionPercentage()
+                                )
+                        ));
+            }
+
+            sheetsClient.clearRange(
+                    SPREADSHEET_ID,
+                    "All_games!A2:G"
+            );
+
+            sheetsClient.writeLocal(
+                    SPREADSHEET_ID,
+                    "All_games!A2",
+                    ownedGamesList
+            );
+        } catch (Exception e) {
+            logger.error("[SYNC-001] Failed to synchronize owned games", e);
         }
 
-        sheetsClient.clearRange(
-                SPREADSHEET_ID,
-                "All_games!A2:G"
-        );
-
-        sheetsClient.writeLocal(
-                SPREADSHEET_ID,
-                "All_games!A2",
-                ownedGamesList
-        );
     }
 }

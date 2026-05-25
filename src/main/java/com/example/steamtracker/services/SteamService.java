@@ -5,6 +5,8 @@ import com.example.steamtracker.models.GameSearchResult;
 import com.example.steamtracker.models.GameStats;
 import com.example.steamtracker.models.WishlistModel;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -27,6 +29,8 @@ public class SteamService {
     private final String API_KEY = System.getenv("STEAM_API_KEY");
 
     private final String STEAM_ID = System.getenv("STEAM_ID");
+
+    private static final Logger logger = LoggerFactory.getLogger(SteamService.class);
 
     public AchievementStats getAchievementProgress(int appId){
         try{
@@ -58,7 +62,7 @@ public class SteamService {
 
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("[STEAM-004] Failed to get achievement progress", e);
             return null;
         }
     }
@@ -84,7 +88,7 @@ public class SteamService {
             return new AchievementStats(unlocked, achievements.size());
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("[STEAM-005] Faile to get game stats", e);
             return null;
         }
     }
@@ -109,7 +113,7 @@ public class SteamService {
             }
 
         }catch (Exception e){
-            e.printStackTrace();
+            logger.error("[PARSE-001] Failed to parse recent games",e);
             return null;
         }
 
@@ -133,7 +137,7 @@ public class SteamService {
                 ownedGamesList.add(new GameStats(appId,gameName,playtimeTotal, 0));
             }
         }catch (Exception e){
-            e.printStackTrace();
+            logger.error("[PARSE-002] Failed to parse Owned Games", e);
             return null;
         }
         return ownedGamesList;
@@ -156,7 +160,7 @@ public class SteamService {
             return new GameSearchResult(appId, name);
 
         }catch (Exception e) {
-            e.printStackTrace();
+            logger.error("[RESOLVE-001] Failed to resolve App ID",e);
             return null;
         }
     }
@@ -182,7 +186,7 @@ public class SteamService {
             }
 
         }catch (Exception e) {
-            e.printStackTrace();
+            logger.error("[PARSE-003] Failed to parse Wishlist Games", e);
             return null;
         }
         return wishlistList;
