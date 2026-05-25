@@ -33,6 +33,9 @@ public class RecentGamesService {
     public void syncRecentGames () {
 
         try{
+            long start = System.currentTimeMillis();
+            logger.info("[SYNC-002] Starting recent games synchronization");
+
             String json = steamClient.getRecentPlayedGames();
 
             List<GameStats> games = steamService.parseRecentGames(json);
@@ -70,6 +73,12 @@ public class RecentGamesService {
                     "Test_Playing!A2",
                     playingValues
             );
+
+            long duration = System.currentTimeMillis() - start;
+
+            logger.info("[SYNC-002] Recent games synchronization completed in {} ms",
+                    duration);
+
         } catch (Exception e) {
             logger.error("[SYNC-002] Failed to synchronize Recent Games", e);
         }

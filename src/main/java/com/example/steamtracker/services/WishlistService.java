@@ -30,7 +30,8 @@ public class WishlistService {
 
     public void syncWishlist() {
         try{
-            System.out.println("Running Wishlist Sync...");
+            long start = System.currentTimeMillis();
+            logger.info("[SYNC-003] Starting wishlist synchronization");
 
             String json = storeClient.getWishlist();
 
@@ -49,11 +50,11 @@ public class WishlistService {
 
                 if (!sheetWishlist.contains(appId)) {
 
-                    System.out.println("New game found: " + appId);
+                    logger.info("New game found: {}", appId);
 
                     processNewGame(appId);
                 } else {
-                    System.out.println("Updating game " + appId + " Name: " + price.getName());
+                    logger.info("Updating game: {} Name: {}",appId, price.getName());
                     updateWishlistGame(appId, price);
                 }
             }
@@ -66,8 +67,11 @@ public class WishlistService {
                     removeGameFromWishlist(sheetAppId);
                 }
             }
+            long duration = System.currentTimeMillis() - start;
 
-            System.out.println("Syncing finalized...");
+            logger.info("[SYNC-003] Wishlist synchronization completed in {} ms"
+                    ,duration);
+
         }catch (Exception e) {
             logger.error("[SYNC-003] Failed to synchronize wishlist", e);
         }
@@ -104,6 +108,8 @@ public class WishlistService {
 
     public void processNewGame(int gameId) {
         try{
+            long start = System.currentTimeMillis();
+            logger.info("[SYNC-004] Processing new game in wishlist");
 
             String searchJson = storeClient.searchGame(gameId);
 
@@ -135,6 +141,10 @@ public class WishlistService {
                     "Test_WishList!A2:A",
                     values);
 
+            long duration = System.currentTimeMillis() - start;
+            logger.info("[SYNC-004] New game processed completed in {} ms"
+                    ,duration);
+
         }catch (Exception e) {
             logger.error("[SYNC-004] Failed to process new wishlist game", e);
         }
@@ -145,7 +155,7 @@ public class WishlistService {
             var response = sheetsClient.getValues(SPREADSHEET_ID, "Test_WishList!A2:A");
 
             if(response == null || response.getValues() == null) {
-                System.err.println("Sheet is empty...");
+                logger.error("Sheet is empty...");
                 return null;
             }
 
@@ -156,7 +166,7 @@ public class WishlistService {
                     int sheetAppId = Integer.parseInt(row.get(0).toString());
 
                     if(sheetAppId == 0 || sheetAppId < 0){
-                        System.err.println("App ID is invalid or empty");
+                        logger.error("App ID is invalid or empty");
                         return null;
                     }
 
@@ -176,10 +186,12 @@ public class WishlistService {
 
     public void updateWishlistGame(int appId, GamePrice price) {
         try{
+            long start = System.currentTimeMillis();
+            logger.info("[SYNC-005] Starting update wishlist");
             Integer row = findRowByAppId(appId);
 
             if (row == null) {
-                System.err.println("Update Failed row is null... Check findRowByAppId response...");
+                logger.error("Update Failed row is null... Check findRowByAppId response...");
                 return;
             }
 
@@ -196,6 +208,10 @@ public class WishlistService {
                     "Test_WishList!A" + row + ":D" + row,
                     values
             );
+
+            long duration = System.currentTimeMillis() - start;
+            logger.info("[SYNC-005] Updating wishlist completed in {} ms"
+                    , duration);
         }catch (Exception e) {
             logger.error("[SYNC-005] Failed to update Wishlist game", e);
         }
@@ -203,6 +219,8 @@ public class WishlistService {
 
     public void removeGameFromWishlist(int appId) {
         try{
+            long start = System.currentTimeMillis();
+            logger.info("[SYNC-006] Wishlist game removal starting");
             Integer row = findRowByAppId(appId);
 
             if (row == null) return;
@@ -211,7 +229,10 @@ public class WishlistService {
                     SPREADSHEET_ID,
                     "Test_WishList!A" + row + ":D" + row);
 
-            System.out.println("Removed Game: " + appId);
+            logger.info("Removed Game: {}", appId);
+            long duration = System.currentTimeMillis() - start;
+            logger.info("[SYNC-006] Wishlist game removal completed in {} ms"
+                    , duration);
         }catch (Exception e) {
             logger.error("[SYNC-006] Failed to remove wishlist game", e);
         }

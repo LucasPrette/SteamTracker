@@ -29,6 +29,10 @@ public class OwnedGamesService {
 
     public void syncOwnedGames() {
         try{
+            long start = System.currentTimeMillis();
+
+            logger.info("[SYNC-001] Starting owned games synchronization");
+
             String ownedGamesJson = steamClient.getAllGames();
 
             List<GameStats> ownedGamesStats = steamService.parseOwnedGames(ownedGamesJson);
@@ -66,6 +70,14 @@ public class OwnedGamesService {
                     "All_games!A2",
                     ownedGamesList
             );
+
+            long duration = System.currentTimeMillis() - start;
+
+            logger.info(
+                    "[SYNC-001] Owned games synchronization completed in {} ms",
+                    duration
+            );
+
         } catch (Exception e) {
             logger.error("[SYNC-001] Failed to synchronize owned games", e);
         }
