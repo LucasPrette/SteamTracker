@@ -41,7 +41,7 @@ public class OwnedGamesService {
                     List.of(
                             entry.getGame().getExternalID(),
                             entry.getGame().getGameName(),
-                            entry.getPlaytime(),
+                            entry.getPlaytimeForever(),
                             entry.getAchievements().getUnlocked(),
                             entry.getAchievements().getTotal(),
                             String.format(

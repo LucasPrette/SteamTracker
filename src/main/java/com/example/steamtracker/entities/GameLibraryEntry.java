@@ -2,13 +2,15 @@ package com.example.steamtracker.entities;
 
 public class GameLibraryEntry {
     private Game game;
-    private int playtime;
+    private int playtimeForever;
+    private int recentPlaytime;
     private AchievementProgress achievements;
 
 
-    public GameLibraryEntry(Game game, int playtime, AchievementProgress achievements) {
+    public GameLibraryEntry(Game game, int playtimeForever, int recentPlaytime, AchievementProgress achievements) {
         this.game = game;
-        this.playtime = playtime;
+        this.playtimeForever = playtimeForever;
+        this.recentPlaytime = recentPlaytime;
         this.achievements = achievements;
     }
 
@@ -23,12 +25,12 @@ public class GameLibraryEntry {
         this.game = game;
     }
 
-    public int getPlaytime() {
-        return playtime;
+    public int getPlaytimeForever() {
+        return playtimeForever;
     }
 
-    public void setPlaytime(int playtime) {
-        this.playtime = playtime;
+    public void setPlaytimeForever(int playtime) {
+        this.playtimeForever = playtime;
     }
 
     public AchievementProgress getAchievements() {
@@ -37,5 +39,13 @@ public class GameLibraryEntry {
 
     public void setAchievements(AchievementProgress achievements) {
         this.achievements = achievements;
+    }
+
+    public int getRecentPlaytime() {
+        return recentPlaytime;
+    }
+
+    public void setRecentPlaytime(int recentPlaytime) {
+        this.recentPlaytime = recentPlaytime;
     }
 }
