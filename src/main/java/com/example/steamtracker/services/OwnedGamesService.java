@@ -40,7 +40,7 @@ public class OwnedGamesService {
             ownedGamesList.add(List.of(
                     game.getAppId(),
                     game.getName(),
-                    game.getPlayTimeForever() + "h",
+                    game.getPlayTimeForever(),
                     unlocked,
                     total,
                     String.format("%.0f%%", percent)

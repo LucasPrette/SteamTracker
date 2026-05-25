@@ -44,7 +44,7 @@ public class RecentGamesService {
                 playingValues.add(List.of(
                         game.getAppId(),
                         game.getName(),
-                        game.getPlayTime2Weeks() + "h",
+                        game.getPlayTime2Weeks(),
                         unlocked,
                         total,
                         String.format("%.0f%%", percent)
