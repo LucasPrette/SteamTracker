@@ -52,6 +52,11 @@ public class OwnedGamesService {
             ));
         }
 
+        sheetsClient.clearRange(
+                SPREADSHEET_ID,
+                "All_games!A2:G"
+        );
+
         sheetsClient.writeLocal(
                 SPREADSHEET_ID,
                 "All_games!A2",

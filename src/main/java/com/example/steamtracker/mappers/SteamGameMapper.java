@@ -20,6 +20,6 @@ public class SteamGameMapper {
                 achievementStats.getTotal()
         );
 
-        return new GameLibraryEntry(game, gameStats.getPlayTimeForever(), progress);
+        return new GameLibraryEntry(game,gameStats.getPlayTimeForever(), gameStats.getPlayTime2Weeks(), progress);
     }
 }

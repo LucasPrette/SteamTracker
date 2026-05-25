@@ -1,5 +1,6 @@
 package com.example.steamtracker.clients;
 
+import com.google.api.services.sheets.v4.model.ClearValuesRequest;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
@@ -8,13 +9,11 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import org.springframework.stereotype.Component;
 import com.google.auth.http.HttpCredentialsAdapter;
-import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 @Component
 public class SheetsClient {
@@ -96,6 +95,18 @@ public class SheetsClient {
         }catch (Exception e) {
             System.err.println("Clearing row not possible...");
             e.printStackTrace();
+        }
+    }
+
+    public void clearRange(String spreadsheetId, String range){
+        try{
+            ValueRange body = new ValueRange().setValues(List.of());
+
+            sheetsService.spreadsheets().values().clear(spreadsheetId,range, new ClearValuesRequest()).execute();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Error trying to clear Sheet range selection..");
         }
     }
 }

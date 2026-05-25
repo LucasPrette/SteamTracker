@@ -57,6 +57,11 @@ public class RecentGamesService {
 
         }
 
+        sheetsClient.clearRange(
+                SPREADSHEET_ID,
+                "Test_Playing!A2:G"
+        );
+
         sheetsClient.writeLocal(
                 SPREADSHEET_ID,
                 "Test_Playing!A2",
