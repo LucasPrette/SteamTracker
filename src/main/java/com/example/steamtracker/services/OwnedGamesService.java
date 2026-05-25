@@ -2,6 +2,8 @@ package com.example.steamtracker.services;
 
 import com.example.steamtracker.clients.SheetsClient;
 import com.example.steamtracker.clients.SteamClient;
+import com.example.steamtracker.entities.GameLibraryEntry;
+import com.example.steamtracker.mappers.SteamGameMapper;
 import com.example.steamtracker.models.AchievementStats;
 import com.example.steamtracker.models.GameStats;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +20,9 @@ public class OwnedGamesService {
     private SteamService steamService;
     @Autowired
     private SheetsClient sheetsClient;
-
     private final String SPREADSHEET_ID = System.getenv("SPREADSHEET_ID");
+    @Autowired
+    private SteamGameMapper steamGameMapper;
 
     public void syncOwnedGames() {
         String ownedGamesJson = steamClient.getAllGames();
@@ -32,18 +35,20 @@ public class OwnedGamesService {
             String achievementJson = steamClient.getPlayerAchievements(game.getAppId());
             AchievementStats stats = steamService.getStats(achievementJson);
 
-            int unlocked = stats.getUnlocked();
-            int total = stats.getTotal();
+            GameLibraryEntry entry = steamGameMapper.toGameLibrary(game, stats);
 
-            double percent = total > 0 ? (double) unlocked/total * 100 : 0;
-
-            ownedGamesList.add(List.of(
-                    game.getAppId(),
-                    game.getName(),
-                    game.getPlayTimeForever(),
-                    unlocked,
-                    total,
-                    String.format("%.0f%%", percent)
+            ownedGamesList.add(
+                    List.of(
+                            entry.getGame().getExternalID(),
+                            entry.getGame().getGameName(),
+                            entry.getPlaytime(),
+                            entry.getAchievements().getUnlocked(),
+                            entry.getAchievements().getTotal(),
+                            String.format(
+                                    "%.0f%%",
+                                    entry.getAchievements()
+                                            .getCompletionPercentage()
+                            )
             ));
         }
 
