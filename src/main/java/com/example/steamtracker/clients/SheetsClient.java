@@ -48,7 +48,11 @@ public class SheetsClient {
         try{
             ValueRange body = new ValueRange().setValues(values);
 
-            sheetsService.spreadsheets().values().update(spreadSheetId, range, body).setValueInputOption("RAW").execute();
+            sheetsService.spreadsheets().values().update(
+                    spreadSheetId,
+                    range,
+                    body).setValueInputOption("RAW").execute();
+
         }catch (Exception e){
             logger.error("[SHEET-002] Failed to write locally on sheet...", e);
         }
@@ -59,7 +63,9 @@ public class SheetsClient {
             String range
     ){
         try{
-            return sheetsService.spreadsheets().values().get(spreadSheetId,range).execute();
+            return sheetsService.spreadsheets()
+                    .values()
+                    .get(spreadSheetId, range).execute();
 
         }catch (Exception e) {
             logger.error("[SHEET-003] Failed getting values from spreadsheet...", e);

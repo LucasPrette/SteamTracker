@@ -15,6 +15,10 @@ public class SteamClient {
     private final String API_KEY = System.getenv("STEAM_API_KEY");
     private final String STEAM_ID = System.getenv("STEAM_ID");
     private static final Logger logger = LoggerFactory.getLogger(SteamClient.class);
+    private final HttpClient httpClient =
+            HttpClient.newBuilder()
+                    .version(HttpClient.Version.HTTP_2)
+                    .build();
 
     public String getPlayerAchievements(int appId) {
         try {
@@ -28,7 +32,7 @@ public class SteamClient {
                     .GET()
                     .build();
 
-            HttpResponse<String> response = HttpClient.newHttpClient()
+            HttpResponse<String> response = httpClient
                     .send(request, HttpResponse.BodyHandlers.ofString());
 
             return response.body();
@@ -51,7 +55,7 @@ public class SteamClient {
                     .GET()
                     .build();
 
-            HttpResponse<String> response = HttpClient.newHttpClient()
+            HttpResponse<String> response = httpClient
                     .send(request, HttpResponse.BodyHandlers.ofString());
 
             return response.body();
@@ -73,7 +77,7 @@ public class SteamClient {
                     .GET()
                     .build();
 
-            HttpResponse<String> response = HttpClient.newHttpClient()
+            HttpResponse<String> response = httpClient
                     .send(request, HttpResponse.BodyHandlers.ofString());
 
             return response.body();

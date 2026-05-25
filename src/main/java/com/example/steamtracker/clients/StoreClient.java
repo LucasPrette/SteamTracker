@@ -12,6 +12,10 @@ import java.net.http.HttpResponse;
 @Component
 public class StoreClient {
     private static final Logger logger = LoggerFactory.getLogger(StoreClient.class);
+    private final HttpClient httpClient =
+            HttpClient.newBuilder()
+                    .version(HttpClient.Version.HTTP_2)
+                    .build();
 
     public String getGameDetails(int appId){
         try{
@@ -21,7 +25,7 @@ public class StoreClient {
 
             HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).GET().build();
 
-            HttpResponse<String> response = HttpClient.newHttpClient()
+            HttpResponse<String> response = httpClient
                     .send(request, HttpResponse.BodyHandlers.ofString());
 
             return response.body();
@@ -39,7 +43,8 @@ public class StoreClient {
 
             HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).GET().build();
 
-            HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = httpClient
+                    .send(request, HttpResponse.BodyHandlers.ofString());
 
             return response.body();
         } catch (Exception e){
@@ -53,9 +58,11 @@ public class StoreClient {
             String url = "https://api.steampowered.com/IWishlistService/GetWishlist/v1/" +
                     "?key="+ System.getenv("STEAM_API_KEY") +
                     "&steamid="+ System.getenv("STEAM_ID");
+
             HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).build();
 
-            HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = httpClient
+                    .send(request, HttpResponse.BodyHandlers.ofString());
 
             return response.body();
         } catch (Exception e) {
