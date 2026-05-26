@@ -8,6 +8,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 
 @Component
 public class StoreClient {
@@ -24,7 +25,10 @@ public class StoreClient {
                         + appId
                         + "&cc=br&l=portuguese";
 
-                HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).GET().build();
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .timeout(Duration.ofSeconds(10))
+                        .GET().build();
 
                 HttpResponse<String> response = httpClient
                         .send(request, HttpResponse.BodyHandlers.ofString());
@@ -54,7 +58,10 @@ public class StoreClient {
                 String url = "https://store.steampowered.com/api/storesearch/?term=" +
                         appId + "&cc=br&l=portuguese";
 
-                HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).GET().build();
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .timeout(Duration.ofSeconds(10))
+                        .GET().build();
 
                 HttpResponse<String> response = httpClient
                         .send(request, HttpResponse.BodyHandlers.ofString());
@@ -84,7 +91,10 @@ public class StoreClient {
                         "?key="+ System.getenv("STEAM_API_KEY") +
                         "&steamid="+ System.getenv("STEAM_ID");
 
-                HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).build();
+                HttpRequest request = HttpRequest.newBuilder()
+                                .uri(URI.create(url))
+                                .timeout(Duration.ofSeconds(10))
+                                .build();
 
                 HttpResponse<String> response = httpClient
                         .send(request, HttpResponse.BodyHandlers.ofString());
