@@ -45,33 +45,58 @@ public class SheetsClient {
         }
     }
     public void writeLocal(String spreadSheetId, String range, List<List<Object>> values){
-        try{
-            ValueRange body = new ValueRange().setValues(values);
+        for(int attempt = 1; attempt <= 3; attempt ++) {
+            try{
+                ValueRange body = new ValueRange().setValues(values);
 
-            sheetsService.spreadsheets().values().update(
-                    spreadSheetId,
-                    range,
-                    body).setValueInputOption("RAW").execute();
+                sheetsService.spreadsheets().values().update(
+                        spreadSheetId,
+                        range,
+                        body).setValueInputOption("RAW").execute();
 
-        }catch (Exception e){
-            logger.error("[SHEET-002] Failed to write locally on sheet...", e);
+            }catch (Exception e){
+                logger.warn("[SHEET-002] Attempt {} failed to write locally on sheet",attempt);
+
+                if (attempt == 3) {
+                    logger.error("[SHEET-002] Failed to write locally on sheet...", e);
+                }
+
+                try{
+                    Thread.sleep(2000);
+                }catch (InterruptedException ignored){
+
+                }
+            }
         }
+
     }
 
     public ValueRange getValues(
             String spreadSheetId,
             String range
     ){
-        try{
-            return sheetsService.spreadsheets()
-                    .values()
-                    .get(spreadSheetId, range).execute();
+        for(int attemmpt = 1; attemmpt <= 3; attemmpt ++ ){
+            try{
+                return sheetsService.spreadsheets()
+                        .values()
+                        .get(spreadSheetId, range).execute();
 
-        }catch (Exception e) {
-            logger.error("[SHEET-003] Failed getting values from spreadsheet...", e);
+            }catch (Exception e) {
+                logger.warn("[SHEET-003] Attempt {} failed to get values from spreadsheet", attemmpt);
 
-            return null;
+                if(attemmpt == 3){
+                    logger.error("[SHEET-003] Failed to get values from spreadsheet", e);
+                }
+
+                try{
+                    Thread.sleep(2000);
+                } catch (InterruptedException ignored) {
+
+                }
+            }
         }
+
+        return null;
     }
 
     public void appendToSheet(
