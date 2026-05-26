@@ -21,49 +21,71 @@ public class SteamClient {
                     .build();
 
     public String getPlayerAchievements(int appId) {
-        try {
-            String url = "https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v1/"
-                    + "?appid=" + appId
-                    + "&key=" + API_KEY +
-                    "&steamid=" + STEAM_ID;
+        for(int attempt = 1; attempt <= 3; attempt ++) {
+            try {
+                String url = "https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v1/"
+                        + "?appid=" + appId
+                        + "&key=" + API_KEY +
+                        "&steamid=" + STEAM_ID;
 
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .GET()
-                    .build();
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .GET()
+                        .build();
 
-            HttpResponse<String> response = httpClient
-                    .send(request, HttpResponse.BodyHandlers.ofString());
+                HttpResponse<String> response = httpClient
+                        .send(request, HttpResponse.BodyHandlers.ofString());
 
-            return response.body();
+                return response.body();
 
-        } catch (Exception e) {
-            logger.error("[STEAM-001] Failed to get player achievements...", e);
+            } catch (Exception e) {
+                logger.warn("[STEAM-001] Attempt {} Failed to get player achievements.", attempt);
 
-            return null;
+                if (attempt == 3) {
+                    logger.error("[STEAM-001] Failed to get player achievements."
+                            , e);
+                }
+
+                try{
+                    Thread.sleep(2000);
+                }catch (InterruptedException ignored){
+
+                }
+            }
         }
+        return null;
     }
 
     public String getRecentPlayedGames() {
-        try{
-            String url = "https://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v1/"
-                    + "?key=" + API_KEY
-                    + "&steamid=" + STEAM_ID;
+        for(int attempt = 1; attempt <= 3; attempt ++) {
+            try{
+                String url = "https://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v1/"
+                        + "?key=" + API_KEY
+                        + "&steamid=" + STEAM_ID;
 
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .GET()
-                    .build();
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .GET()
+                        .build();
 
-            HttpResponse<String> response = httpClient
-                    .send(request, HttpResponse.BodyHandlers.ofString());
+                HttpResponse<String> response = httpClient
+                        .send(request, HttpResponse.BodyHandlers.ofString());
 
-            return response.body();
+                return response.body();
 
-        } catch (Exception e) {
-            logger.error("[STEAM-002] Failed to get Recent Played games ...", e);
-            return null;
+            } catch (Exception e) {
+                logger.warn("[STEAM-002] Attempt {} failed to get Recent Played games.", attempt);
+
+                if(attempt == 3) {
+                    logger.error("[STEAM-002] Failed to get recent played games.", e);
+                }
+                try{
+                    Thread.sleep(2000);
+                }catch (InterruptedException ignored) {
+                }
+            }
         }
+        return null;
     }
 
     public String getAllGames() {
