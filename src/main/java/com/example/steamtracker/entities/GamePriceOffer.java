@@ -1,14 +1,16 @@
 package com.example.steamtracker.entities;
 
 public class GamePriceOffer {
+    private String providerName;
     private String gameName;
     private String store; // store name
     private double originalPrice;
     private double finalPrice;
     private double discount;
-    private String url;
+    private String storeUrl;
 
     public GamePriceOffer() {
+
     }
 
     public GamePriceOffer(
@@ -17,14 +19,16 @@ public class GamePriceOffer {
             double originalPrice,
             double finalPrice,
             double discount,
-            String url
+            String storeUrl,
+            String providerName
     ) {
         this.gameName = gameName;
         this.store = store;
         this.originalPrice = originalPrice;
         this.finalPrice = finalPrice;
         this.discount = discount;
-        this.url = url;
+        this.storeUrl = storeUrl;
+        this.providerName = providerName;
     }
 
     public String getGameName() {
@@ -67,11 +71,19 @@ public class GamePriceOffer {
         this.discount = discount;
     }
 
-    public String getUrl() {
-        return url;
+    public String getStoreUrl() {
+        return storeUrl;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setStoreUrl(String storeUrl) {
+        this.storeUrl = this.storeUrl;
+    }
+
+    public String getProviderName() {
+        return providerName;
+    }
+
+    public void setProviderName(String providerName) {
+        this.providerName = providerName;
     }
 }

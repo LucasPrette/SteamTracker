@@ -2,9 +2,11 @@ package com.example.steamtracker.services;
 
 import com.example.steamtracker.clients.SheetsClient;
 import com.example.steamtracker.clients.StoreClient;
+import com.example.steamtracker.entities.GamePriceOffer;
 import com.example.steamtracker.models.GamePrice;
 import com.example.steamtracker.models.GameSearchResult;
 import com.example.steamtracker.models.WishlistModel;
+import com.example.steamtracker.providers.SteamPriceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,9 @@ public class WishlistService {
     @Autowired
     private StoreService storeService;
 
+    @Autowired
+    private SteamPriceProvider steamPriceProvider;
+
     private static final Logger logger = LoggerFactory.getLogger(WishlistService.class);
 
     public void syncWishlist() {
@@ -42,20 +47,18 @@ public class WishlistService {
             for(WishlistModel game : currentWishlist) {
                 int appId = game.getAppId();
 
-                String gameDetails = storeClient.getGameDetails(appId);
+                GamePriceOffer gameDetails = steamPriceProvider.getPrice(appId);
 
-                GamePrice price = storeService.parsePrice(gameDetails, appId);
-
-                if (price == null) continue;
+                if (gameDetails == null) continue;
 
                 if (!sheetWishlist.contains(appId)) {
 
                     logger.info("New game found: {}", appId);
-
                     processNewGame(appId);
+
                 } else {
-                    logger.info("Updating game: {} Name: {}",appId, price.getName());
-                    updateWishlistGame(appId, price);
+                    logger.info("Updating game: {} Name: {}",appId, gameDetails.getGameName());
+                    updateWishlistGame(appId, gameDetails);
                 }
             }
 
@@ -121,20 +124,20 @@ public class WishlistService {
 
             int appId = result.getAppId();
 
-            String detailsJson = storeClient.getGameDetails(appId);
+            GamePriceOffer offer = steamPriceProvider.getPrice(appId);
 
-            GamePrice price = storeService.parsePrice(detailsJson, appId);
-
-            if (price == null) return;
+            if (offer == null) return;
 
             List<List<Object>> values = List.of(
                     List.of(
                             appId,
-                            price.getName(),
-                            price.getFinalPrice(),
-                            String.format("%.0f%%", price.getDiscount())
+                            offer.getGameName(),
+                            offer.getFinalPrice(),
+                            String.format("%.0f%%", offer.getDiscount())
                             )
             );
+
+            Thread.sleep(1000); // limit time for Sheets Quota of 60 writes per minute
 
             sheetsClient.appendToSheet(
                     SPREADSHEET_ID,
@@ -142,6 +145,7 @@ public class WishlistService {
                     values);
 
             long duration = System.currentTimeMillis() - start;
+
             logger.info("[SYNC-004] New game processed completed in {} ms"
                     ,duration);
 
@@ -184,7 +188,7 @@ public class WishlistService {
         return null;
     }
 
-    public void updateWishlistGame(int appId, GamePrice price) {
+    public void updateWishlistGame(int appId, GamePriceOffer offer) {
         try{
             long start = System.currentTimeMillis();
             logger.info("[SYNC-005] Starting update wishlist");
@@ -198,10 +202,12 @@ public class WishlistService {
             List<List<Object>> values = List.of(
                     List.of(
                             appId,
-                            price.getName(),
-                            price.getFinalPrice(),
-                            String.format("%.0f%%", price.getDiscount())
+                            offer.getGameName(),
+                            offer.getFinalPrice(),
+                            String.format("%.0f%%", offer.getDiscount())
                     ));
+
+            Thread.sleep(1000);
 
             sheetsClient.writeLocal(
                     SPREADSHEET_ID,
@@ -230,9 +236,12 @@ public class WishlistService {
                     "Test_WishList!A" + row + ":D" + row);
 
             logger.info("Removed Game: {}", appId);
+
             long duration = System.currentTimeMillis() - start;
+
             logger.info("[SYNC-006] Wishlist game removal completed in {} ms"
                     , duration);
+
         }catch (Exception e) {
             logger.error("[SYNC-006] Failed to remove wishlist game", e);
         }
@@ -245,6 +254,7 @@ public class WishlistService {
             for (WishlistModel game : wishList) {
                 ids.add(game.getAppId());
             }
+
             return ids;
         }catch (Exception e) {
             logger.error("[SHEET-009] Failed to get Wishlist app IDs from sheet", e);

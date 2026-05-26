@@ -56,6 +56,7 @@ public class SteamScheduler {
 
             logger.info("[SCHED-003] Recent games scheduler execution finished");
         }catch (Exception e) {
+
             logger.error("[SCHED-003] Recent Games scheduler execution failed");
         }
     }

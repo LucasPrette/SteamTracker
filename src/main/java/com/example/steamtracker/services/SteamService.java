@@ -27,7 +27,6 @@ public class SteamService {
     private final String API_URL = "https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v0001/";
 
     private final String API_KEY = System.getenv("STEAM_API_KEY");
-
     private final String STEAM_ID = System.getenv("STEAM_ID");
 
     private static final Logger logger = LoggerFactory.getLogger(SteamService.class);
