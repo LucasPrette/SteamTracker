@@ -1,15 +1,16 @@
-package com.example.steamtracker.providers;
+package com.example.steamtracker.providers.steam;
 
 import com.example.steamtracker.clients.StoreClient;
 import com.example.steamtracker.entities.GamePriceOffer;
 import com.example.steamtracker.models.GamePrice;
+import com.example.steamtracker.providers.PriceProvider;
 import com.example.steamtracker.services.StoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SteamPriceProvider implements PriceProvider{
+public class SteamPriceProvider implements PriceProvider {
 
     private final StoreClient storeClient;
     private final StoreService storeService;

@@ -1,6 +1,6 @@
 package com.example.steamtracker.services;
 
-import com.example.steamtracker.models.AchievementStats;
+import com.example.steamtracker.entities.AchievementProgress;
 import com.example.steamtracker.models.GameSearchResult;
 import com.example.steamtracker.models.GameStats;
 import com.example.steamtracker.models.WishlistModel;
@@ -22,51 +22,10 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class SteamService {
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
-    private final String API_URL = "https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v0001/";
-
-    private final String API_KEY = System.getenv("STEAM_API_KEY");
-    private final String STEAM_ID = System.getenv("STEAM_ID");
 
     private static final Logger logger = LoggerFactory.getLogger(SteamService.class);
 
-    public AchievementStats getAchievementProgress(int appId){
-        try{
-            String url = API_URL
-                    + "?appid=" + appId
-                    + "&key=" + API_KEY +
-                    "&steamid=" + STEAM_ID;
-
-            HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url)).GET().build();
-
-            HttpResponse<String> response = client.send(request,HttpResponse.BodyHandlers.ofString());
-
-            JsonNode root = objectMapper.readTree(response.body());
-
-            JsonNode achievements = root.path("playerstats").path("achievements");
-
-            int total = achievements.size();
-            int unlocked = 0;
-
-            for (JsonNode a : achievements) {
-                if (a.get("achieved").asInt() == 1) {
-                    unlocked++;
-                }
-            }
-
-            return new AchievementStats(unlocked, total);
-
-
-        } catch (Exception e) {
-            logger.error("[STEAM-004] Failed to get achievement progress", e);
-            return null;
-        }
-    }
-
-    public AchievementStats getStats(String json) {
+    public AchievementProgress parseAchievementProgress(String json) {
 
         try {
             com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
@@ -84,10 +43,10 @@ public class SteamService {
                 }
             }
 
-            return new AchievementStats(unlocked, achievements.size());
+            return new AchievementProgress (unlocked, achievements.size());
 
         } catch (Exception e) {
-            logger.error("[STEAM-005] Faile to get game stats", e);
+            logger.error("[STEAM-005] Failed to get game stats", e);
             return null;
         }
     }

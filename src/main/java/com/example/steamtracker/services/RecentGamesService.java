@@ -1,19 +1,14 @@
 package com.example.steamtracker.services;
 
 import com.example.steamtracker.clients.SheetsClient;
-import com.example.steamtracker.clients.SteamClient;
 import com.example.steamtracker.entities.GameLibraryEntry;
 import com.example.steamtracker.mappers.SteamGameMapper;
-import com.example.steamtracker.models.AchievementStats;
-import com.example.steamtracker.models.GameStats;
 import com.example.steamtracker.providers.LibraryProvider;
-import com.example.steamtracker.providers.SteamLibraryProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service

@@ -3,8 +3,8 @@ package com.example.steamtracker.services;
 import com.example.steamtracker.clients.SheetsClient;
 import com.example.steamtracker.entities.GameLibraryEntry;
 import com.example.steamtracker.mappers.SteamGameMapper;
+import com.example.steamtracker.providers.AchievementProvider;
 import com.example.steamtracker.providers.LibraryProvider;
-import com.example.steamtracker.providers.SteamLibraryProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +18,8 @@ public class OwnedGamesService {
     private SheetsClient sheetsClient;
     @Autowired
     private LibraryProvider libraryProvider;
+    @Autowired
+    private AchievementProvider achievementProvider;
     private final String SPREADSHEET_ID = System.getenv("SPREADSHEET_ID");
     @Autowired
     private SteamGameMapper steamGameMapper;
