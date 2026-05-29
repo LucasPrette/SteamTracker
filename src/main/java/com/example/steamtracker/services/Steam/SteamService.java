@@ -1,4 +1,4 @@
-package com.example.steamtracker.services;
+package com.example.steamtracker.services.Steam;
 
 import com.example.steamtracker.entities.AchievementProgress;
 import com.example.steamtracker.models.GameSearchResult;
@@ -11,10 +11,6 @@ import org.springframework.stereotype.Service;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;

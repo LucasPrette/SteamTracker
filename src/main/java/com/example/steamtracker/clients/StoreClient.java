@@ -84,7 +84,7 @@ public class StoreClient {
         return null;
     }
 
-    public String getWishlist() {
+    public String                                               getWishlist() {
         for(int attempt = 1; attempt <= 3; attempt ++) {
             try{
                 String url = "https://api.steampowered.com/IWishlistService/GetWishlist/v1/" +

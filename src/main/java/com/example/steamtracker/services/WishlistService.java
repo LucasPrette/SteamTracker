@@ -3,9 +3,12 @@ package com.example.steamtracker.services;
 import com.example.steamtracker.clients.SheetsClient;
 import com.example.steamtracker.clients.StoreClient;
 import com.example.steamtracker.entities.GamePriceOffer;
+import com.example.steamtracker.entities.WishListEntry;
 import com.example.steamtracker.models.GameSearchResult;
 import com.example.steamtracker.models.WishlistModel;
+import com.example.steamtracker.providers.WishlistProvider;
 import com.example.steamtracker.providers.steam.SteamPriceProvider;
+import com.example.steamtracker.services.Steam.SteamService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +27,11 @@ public class WishlistService {
     private SteamService steamService;
 
     private final String SPREADSHEET_ID = System.getenv("SPREADSHEET_ID");
-    @Autowired
-    private StoreService storeService;
 
     @Autowired
     private SteamPriceProvider steamPriceProvider;
+    @Autowired
+    private WishlistProvider wishlistProvider;
 
     private static final Logger logger = LoggerFactory.getLogger(WishlistService.class);
 
@@ -37,14 +40,12 @@ public class WishlistService {
             long start = System.currentTimeMillis();
             logger.info("[SYNC-003] Starting wishlist synchronization");
 
-            String json = storeClient.getWishlist();
-
-            List<WishlistModel> currentWishlist = steamService.parseWishlist(json);
-
             List<Integer> sheetWishlist = getWishlistFromSheet();
 
-            for(WishlistModel game : currentWishlist) {
-                int appId = game.getAppId();
+            List<WishListEntry> currentWishlist = wishlistProvider.getWishlist();
+
+            for(WishListEntry game : currentWishlist) {
+                int appId = game.getGame().getExternalID();
 
                 GamePriceOffer gameDetails = steamPriceProvider.getPrice(appId);
 
@@ -246,12 +247,12 @@ public class WishlistService {
         }
     }
 
-    public List<Integer> getCurrentWishlistAppIds(List<WishlistModel> wishList){
+    public List<Integer> getCurrentWishlistAppIds(List<WishListEntry> wishList){
         try{
             List<Integer> ids = new ArrayList<>();
 
-            for (WishlistModel game : wishList) {
-                ids.add(game.getAppId());
+            for (WishListEntry game : wishList) {
+                ids.add(game.getGame().getExternalID());
             }
 
             return ids;

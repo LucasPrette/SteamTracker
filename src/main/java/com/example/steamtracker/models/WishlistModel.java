@@ -6,7 +6,12 @@ public class WishlistModel {
     private String priority;
     private String dateAdded;
 
-    public WishlistModel(int appId, String priority, String dateAdded) {
+    public WishlistModel
+            (
+            int appId,
+            String priority,
+            String dateAdded
+            ) {
         this.appId = appId;
         this.priority = priority;
         this.dateAdded = dateAdded;

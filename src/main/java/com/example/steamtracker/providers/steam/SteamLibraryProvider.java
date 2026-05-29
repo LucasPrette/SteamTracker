@@ -1,15 +1,12 @@
 package com.example.steamtracker.providers.steam;
 
 import com.example.steamtracker.clients.SteamClient;
-import com.example.steamtracker.entities.AchievementProgress;
-import com.example.steamtracker.entities.Game;
 import com.example.steamtracker.entities.GameLibraryEntry;
-import com.example.steamtracker.enums.Platform;
 import com.example.steamtracker.mappers.SteamGameMapper;
 import com.example.steamtracker.models.GameStats;
 import com.example.steamtracker.providers.AchievementProvider;
 import com.example.steamtracker.providers.LibraryProvider;
-import com.example.steamtracker.services.SteamService;
+import com.example.steamtracker.services.Steam.SteamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
