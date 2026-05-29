@@ -18,8 +18,8 @@ public class SteamScheduler {
 
     private static final Logger logger = LoggerFactory.getLogger(SteamScheduler.class);
 
-    @Scheduled(cron = "0 0 12,0 * * *",
-    zone = "America/Sao_Paulo")
+    @Scheduled(cron = "${scheduler.wishlist.cron}",
+            zone = "America/Sao_Paulo")
     public void syncWishlistJob() {
         try{
             logger.info("[SCHED-001] Triggering Wishlist scheduler");
@@ -32,7 +32,7 @@ public class SteamScheduler {
         }
     }
 
-    @Scheduled(cron = "0 * * * * *",
+    @Scheduled(cron = "${scheduler.owned-games.cron}",
             zone = "America/Sao_Paulo")
     public void syncOwnedGamesJob() {
         try{
@@ -46,7 +46,7 @@ public class SteamScheduler {
         }
     }
 
-    @Scheduled(cron = "0 * * * * *",
+    @Scheduled(cron = "${scheduler.recent-games.cron}",
             zone = "America/Sao_Paulo")
     public void syncRecentGamesJob() {
         try{
