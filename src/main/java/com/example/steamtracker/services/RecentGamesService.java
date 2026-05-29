@@ -6,6 +6,8 @@ import com.example.steamtracker.entities.GameLibraryEntry;
 import com.example.steamtracker.mappers.SteamGameMapper;
 import com.example.steamtracker.models.AchievementStats;
 import com.example.steamtracker.models.GameStats;
+import com.example.steamtracker.providers.LibraryProvider;
+import com.example.steamtracker.providers.SteamLibraryProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +18,8 @@ import java.util.List;
 
 @Service
 public class RecentGamesService {
-
     @Autowired
-    private SteamClient steamClient;
-    @Autowired
-    private SteamService steamService;
+    private LibraryProvider libraryProvider;
     @Autowired
     private SheetsClient sheetsClient;
 
@@ -36,32 +35,22 @@ public class RecentGamesService {
             long start = System.currentTimeMillis();
             logger.info("[SYNC-002] Starting recent games synchronization");
 
-            String json = steamClient.getRecentPlayedGames();
+            List<GameLibraryEntry> games =
+                    libraryProvider.getRecentGames();
 
-            List<GameStats> games = steamService.parseRecentGames(json);
-            List<List<Object>> playingValues = new ArrayList<>();
-
-            for (GameStats game : games) {
-                String achievementJson = steamClient.getPlayerAchievements(game.getAppId());
-                AchievementStats stats = steamService.getStats(achievementJson);
-
-                GameLibraryEntry entry = steamGameMapper.toGameLibrary(game, stats);
-
-                if(game.getPlayTime2Weeks() > 0) {
-                    playingValues.add(List.of(
-                            entry.getGame().getExternalID(),
-                            entry.getGame().getGameName(),
-                            entry.getRecentPlaytime(),
-                            entry.getAchievements().getUnlocked(),
-                            entry.getAchievements().getTotal(),
-                            String.format(
-                                    "%.0f%%",
-                                    entry.getAchievements().getCompletionPercentage()
-                            )
-                    ));
-                }
-
-            }
+            List<List<Object>> playingValues = games.stream()
+                            .map(gameLibraryEntry -> List.<Object>of(
+                                    gameLibraryEntry.getGame().getExternalID(),
+                                    gameLibraryEntry.getGame().getGameName(),
+                                    gameLibraryEntry.getRecentPlaytime(),
+                                    gameLibraryEntry.getAchievements().getUnlocked(),
+                                    gameLibraryEntry.getAchievements().getTotal(),
+                                    String.format(
+                                            "%.0f%%",
+                                            gameLibraryEntry.getAchievements().getCompletionPercentage()
+                                    )
+                            ))
+                    .toList();
 
             sheetsClient.clearRange(
                     SPREADSHEET_ID,

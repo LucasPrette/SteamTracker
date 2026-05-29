@@ -32,7 +32,7 @@ public class SteamScheduler {
         }
     }
 
-    @Scheduled(cron = "0 0 0 * * 7",
+    @Scheduled(cron = "0 * * * * *",
             zone = "America/Sao_Paulo")
     public void syncOwnedGamesJob() {
         try{
@@ -46,7 +46,7 @@ public class SteamScheduler {
         }
     }
 
-    @Scheduled(cron = "0 0 18-23/2,0-3/2 * * *",
+    @Scheduled(cron = "0 * * * * *",
             zone = "America/Sao_Paulo")
     public void syncRecentGamesJob() {
         try{
