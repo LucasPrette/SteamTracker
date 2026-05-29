@@ -1,11 +1,13 @@
 package com.example.steamtracker.entities;
 
+import com.example.steamtracker.enums.Platform;
+
 public class Game {
     private int externalID; // game identification
     private String gameName;
-    private String platform;
+    private Platform platform;
 
-    public Game(int externalID, String gameName, String platform) {
+    public Game(int externalID, String gameName, Platform platform) {
         this.externalID = externalID;
         this.gameName = gameName;
         this.platform = platform;
@@ -30,11 +32,11 @@ public class Game {
         this.gameName = gameName;
     }
 
-    public String getPlatform() {
+    public Platform getPlatform() {
         return platform;
     }
 
-    public void setPlatform(String platform) {
+    public void setPlatform(Platform platform) {
         this.platform = platform;
     }
 }
