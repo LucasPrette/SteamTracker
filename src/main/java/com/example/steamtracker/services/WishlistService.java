@@ -4,11 +4,10 @@ import com.example.steamtracker.clients.SheetsClient;
 import com.example.steamtracker.clients.StoreClient;
 import com.example.steamtracker.entities.GamePriceOffer;
 import com.example.steamtracker.entities.WishListEntry;
-import com.example.steamtracker.models.GameSearchResult;
-import com.example.steamtracker.models.WishlistModel;
 import com.example.steamtracker.providers.WishlistProvider;
 import com.example.steamtracker.providers.steam.SteamPriceProvider;
 import com.example.steamtracker.services.Steam.SteamService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,21 +17,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class WishlistService {
-    @Autowired
-    private StoreClient storeClient;
-    @Autowired
-    private SheetsClient sheetsClient;
-    @Autowired
-    private SteamService steamService;
 
+    private final SheetsClient sheetsClient;
     private final String SPREADSHEET_ID = System.getenv("SPREADSHEET_ID");
-
-    @Autowired
-    private SteamPriceProvider steamPriceProvider;
-    @Autowired
-    private WishlistProvider wishlistProvider;
-
+    private final SteamPriceProvider steamPriceProvider;
+    private final WishlistProvider wishlistProvider;
     private static final Logger logger = LoggerFactory.getLogger(WishlistService.class);
 
     public void syncWishlist() {
@@ -109,20 +100,10 @@ public class WishlistService {
         }
     }
 
-    public void processNewGame(int gameId) {
+    public void processNewGame(int appId) {
         try{
             long start = System.currentTimeMillis();
             logger.info("[SYNC-004] Processing new game in wishlist");
-
-            String searchJson = storeClient.searchGame(gameId);
-
-            GameSearchResult result = steamService.resolveAppId(searchJson);
-
-            if (result == null){
-                return;
-            }
-
-            int appId = result.getAppId();
 
             GamePriceOffer offer = steamPriceProvider.getPrice(appId);
 

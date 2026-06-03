@@ -5,24 +5,19 @@ import com.example.steamtracker.entities.GamePriceOffer;
 import com.example.steamtracker.models.GamePrice;
 import com.example.steamtracker.providers.PriceProvider;
 import com.example.steamtracker.services.StoreService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class SteamPriceProvider implements PriceProvider {
 
     private final StoreClient storeClient;
     private final StoreService storeService;
     private final Logger logger = LoggerFactory.getLogger(SteamPriceProvider.class);
 
-    public SteamPriceProvider(
-            StoreClient storeClient,
-            StoreService storeService
-    ) {
-        this.storeClient = storeClient;
-        this.storeService = storeService;
-    }
 
     @Override
     public GamePriceOffer getPrice(int externalId) {

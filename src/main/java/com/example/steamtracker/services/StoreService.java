@@ -1,6 +1,7 @@
 package com.example.steamtracker.services;
 
 import com.example.steamtracker.models.GamePrice;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -8,6 +9,7 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 @Service
+@RequiredArgsConstructor
 public class StoreService {
     private static final Logger logger = LoggerFactory.getLogger(StoreService.class);
     public GamePrice parsePrice(String json, int appId){

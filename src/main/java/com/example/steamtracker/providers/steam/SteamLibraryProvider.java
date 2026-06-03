@@ -7,25 +7,21 @@ import com.example.steamtracker.models.GameStats;
 import com.example.steamtracker.providers.AchievementProvider;
 import com.example.steamtracker.providers.LibraryProvider;
 import com.example.steamtracker.services.Steam.SteamService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class SteamLibraryProvider implements LibraryProvider {
-    @Autowired
-    private SteamClient steamClient;
-    @Autowired
-    private SteamService steamService;
-    @Autowired
-    private SteamGameMapper steamGameMapper;
-    @Autowired
-    private AchievementProvider achievementProvider;
 
-    public SteamLibraryProvider() {
-    }
+    private final SteamClient steamClient;
+    private final SteamService steamService;
+    private final SteamGameMapper steamGameMapper;
+    private final AchievementProvider achievementProvider;
+
 
     @Override
     public List<GameLibraryEntry> getOwnedGames() {

@@ -2,25 +2,20 @@ package com.example.steamtracker.services;
 
 import com.example.steamtracker.clients.SheetsClient;
 import com.example.steamtracker.entities.GameLibraryEntry;
-import com.example.steamtracker.mappers.SteamGameMapper;
 import com.example.steamtracker.providers.LibraryProvider;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class RecentGamesService {
-    @Autowired
-    private LibraryProvider libraryProvider;
-    @Autowired
-    private SheetsClient sheetsClient;
-
+    private final LibraryProvider libraryProvider;
+    private final SheetsClient sheetsClient;
     private final String SPREADSHEET_ID = System.getenv("SPREADSHEET_ID");
-    @Autowired
-    private SteamGameMapper steamGameMapper;
 
     private static final Logger logger = LoggerFactory.getLogger(RecentGamesService.class);
 

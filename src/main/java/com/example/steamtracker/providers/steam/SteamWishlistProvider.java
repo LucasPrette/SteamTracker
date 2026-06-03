@@ -7,18 +7,18 @@ import com.example.steamtracker.enums.Platform;
 import com.example.steamtracker.models.WishlistModel;
 import com.example.steamtracker.providers.WishlistProvider;
 import com.example.steamtracker.services.Steam.SteamService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class SteamWishlistProvider implements WishlistProvider {
 
-    @Autowired
-    private SteamService steamService;
-    @Autowired
-    private StoreClient storeClient;
+    private final SteamService steamService;
+    private final StoreClient storeClient;
 
     @Override
     public List<WishListEntry> getWishlist() {
