@@ -33,4 +33,4 @@ build/
 .vscode/
 
 steamsync-495415-54fb9885729f.json
-application-local.properties
+src/main/resources/application-local.properties
