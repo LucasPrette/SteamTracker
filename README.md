@@ -1,9 +1,7 @@
 # SteamTracker
-A Spring Boot application that aggregates game libraries, achievements, wishlists, and pricing information into a centralized dashboard.
+SteamTracker is a Spring Boot application designed to centralize game libraries, achievement progress, wishlist items, playtime statistics, and pricing information into a single dashboard.
 
-SteamTracker is a multi-platform game tracking application focused on bringing all your gaming data into a single place.
-
-The project aims to centralize game libraries, achievement progress, wishlist items, playtime statistics, and pricing information, making it easier to track your gaming activity across different platforms.
+The project aims to provide a unified gaming hub for tracking game libraries, achievements, wishlists, playtime statistics, and pricing information across multiple gaming platforms and storefronts.
 
 ## Features
 
@@ -63,7 +61,14 @@ This architecture allows future support for multiple gaming platforms without ma
 ### Google Sheets
 
 * Dashboard Visualization
-* Data Persistence
+* Temporary Data Persistence Layer
+
+## Motivation
+
+SteamTracker started as a personal project to consolidate gaming information from different platforms into a single location.
+
+The long-term goal is to provide a unified gaming hub capable of tracking libraries, achievements, wishlist items, playtime statistics, and pricing information across multiple gaming ecosystems.
+
 
 ## Dashboard Preview
 
@@ -78,6 +83,99 @@ This architecture allows future support for multiple gaming platforms without ma
 ### Wishlist
 
 ![Wishlist](docs/wishlistTitles.png)
+
+## Setup
+
+### Prerequisites
+
+* Java 17+
+* Maven
+* Steam Web API key
+* Google Cloud Project with Sheets API enabled
+* Google Service Account credentials
+
+### Environment Variables
+
+Create the following environment variables:
+
+```properties
+STEAM_API_KEY=<your-steam-api-key>
+STEAM_ID=<your-steam-id>
+SPREADSHEET_ID=<your-google-sheet-id>
+```
+
+### Required Files
+
+The application requires a Google Service Account credentials JSON file.
+
+The credentials file is intentionally excluded from version control and must be created manually following the Google Sheets Credentials section.
+
+### Google Sheets Credentials
+
+1. Create a Google Cloud Project.
+2. Enable the Google Sheets API.
+3. Create a Service Account.
+4. Download the credentials JSON file.
+5. Place the credentials file in the project root.
+6. Share the target spreadsheet with the service account email.
+
+### Running the Application
+
+Clone the repository:
+
+```bash
+git clone https://github.com/LucasPrette/SteamTracker.git
+cd SteamTracker
+```
+
+Run the application:
+
+```bash
+mvn spring-boot:run
+```
+
+### Local Development
+
+Create:
+
+```text
+src/main/resources/application-local.properties
+```
+
+Example:
+
+```properties
+scheduler.owned-games.cron=0 */10 * * * *
+scheduler.recent-games.cron=0 */5 * * * *
+scheduler.wishlist.cron=0 */15 * * * *
+```
+
+Run with:
+
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=local
+```
+
+## Deployment
+
+SteamTracker is designed to run continuously as a background service.
+
+Typical deployment options:
+
+* Linux server
+* VPS
+* Home server
+* Docker container (planned)
+
+The application uses scheduled jobs to synchronize gaming data with Google Sheets automatically.
+
+## Supported Platforms
+
+| Platform | Library | Achievements | Wishlist | Prices |
+|-----------|----------|-------------|----------|---------|
+| Steam | ✅ | ✅ | ✅ | ✅ |
+| GOG | 🚧 | 🚧 | 🚧 | 🚧 |
+| Xbox | 🚧 | 🚧 | 🚧 | 🚧 |
 
 ## Roadmap
 
