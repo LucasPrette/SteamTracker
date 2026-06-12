@@ -7,15 +7,15 @@ import com.example.steamtracker.entities.WishListEntry;
 import com.example.steamtracker.enums.GameStatus;
 import com.example.steamtracker.providers.WishlistProvider;
 import com.example.steamtracker.providers.steam.SteamPriceProvider;
-import com.example.steamtracker.services.Steam.SteamService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +31,8 @@ public class WishlistService {
         try{
             long start = System.currentTimeMillis();
             logger.info("[SYNC-003] Starting wishlist synchronization");
+
+            Map<Integer, Integer> rowMap = getWishlistRowMap();
 
             List<Integer> sheetWishlist = getWishlistFromSheet();
 
@@ -50,7 +52,11 @@ public class WishlistService {
 
                 } else {
                     logger.info("Updating game: {} Name: {}",appId, offer.getGameName());
-                    updateWishlistGame(appId, offer);
+                    updateWishlistGame(
+                            rowMap.get(appId),
+                            appId,
+                            offer
+                    );
                 }
             }
 
@@ -59,7 +65,10 @@ public class WishlistService {
             for (Integer sheetAppId : sheetWishlist) {
                 if(!currentSteamIds.contains(sheetAppId)) {
 
-                    removeGameFromWishlist(sheetAppId);
+                    removeGameFromWishlist(
+                            rowMap.get(sheetAppId)
+                            ,sheetAppId
+                    );
                 }
             }
             long duration = System.currentTimeMillis() - start;
@@ -135,47 +144,40 @@ public class WishlistService {
         }
     }
 
-    public Integer findRowByAppId(int appId){
-        try {
-            var response = sheetsClient.getValues(SPREADSHEET_ID, "Test_WishList!A2:A");
+    public Map<Integer, Integer> getWishlistRowMap(){
+        Map<Integer, Integer> rows = new HashMap<>();
 
-            if(response == null || response.getValues() == null) {
-                logger.error("Sheet is empty...");
-                return null;
-            }
+        var response = sheetsClient.getValues(
+                SPREADSHEET_ID,
+                "Test_WishList!A2:A"
+        );
 
-            int rowIndex = 2;
-
-            for(List<Object> row : response.getValues()){
-                if(!row.isEmpty()) {
-                    int sheetAppId = Integer.parseInt(row.get(0).toString());
-
-                    if(sheetAppId == 0 || sheetAppId < 0){
-                        logger.error("App ID is invalid or empty");
-                        return null;
-                    }
-
-                    if(sheetAppId == appId) {
-                        return rowIndex;
-                    }
-                }
-
-                rowIndex++;
-            }
-
-        }catch (Exception e) {
-            logger.error("[SHEET-008] Failed to find App ID on row", e);
+        if (response == null || response.getValues() == null) {
+            logger.warn("Wishlist sheet is empty");
+            return rows;
         }
-        return null;
+
+        int rowIndex = 2;
+
+        for(List<Object> row : response.getValues()){
+            if(!row.isEmpty()) {
+                int appId = Integer.parseInt(row.get(0).toString());
+
+                rows.put(appId, rowIndex);
+            }
+
+            rowIndex++;
+        }
+
+        return rows;
     }
 
-    public void updateWishlistGame(int appId, GamePriceOffer offer) {
+    public void updateWishlistGame(int row, int appId, GamePriceOffer offer) {
         try{
             long start = System.currentTimeMillis();
             logger.info("[SYNC-005] Starting update wishlist");
-            Integer row = findRowByAppId(appId);
 
-            if (row == null) {
+            if (row == 0) {
                 logger.error("Update Failed row is null... Check findRowByAppId response...");
                 return;
             }
@@ -205,13 +207,12 @@ public class WishlistService {
         }
     }
 
-    public void removeGameFromWishlist(int appId) {
+    public void removeGameFromWishlist(int row, int appId) {
         try{
             long start = System.currentTimeMillis();
             logger.info("[SYNC-006] Wishlist game removal starting");
-            Integer row = findRowByAppId(appId);
 
-            if (row == null) return;
+            if (row == 0) return;
 
             sheetsClient.clearRow(
                     SPREADSHEET_ID,
