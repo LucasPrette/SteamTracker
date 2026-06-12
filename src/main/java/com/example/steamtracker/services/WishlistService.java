@@ -39,18 +39,18 @@ public class WishlistService {
             for(WishListEntry game : currentWishlist) {
                 int appId = game.getGame().getExternalID();
 
-                GamePriceOffer gameDetails = steamPriceProvider.getPrice(appId);
+                GamePriceOffer offer = steamPriceProvider.getPrice(appId);
 
-                if (gameDetails == null) continue;
+                if (offer == null) continue;
 
                 if (!sheetWishlist.contains(appId)) {
 
                     logger.info("New game found: {}", appId);
-                    processNewGame(appId);
+                    processNewGame(appId, offer);
 
                 } else {
-                    logger.info("Updating game: {} Name: {}",appId, gameDetails.getGameName());
-                    updateWishlistGame(appId, gameDetails);
+                    logger.info("Updating game: {} Name: {}",appId, offer.getGameName());
+                    updateWishlistGame(appId, offer);
                 }
             }
 
@@ -101,12 +101,10 @@ public class WishlistService {
         }
     }
 
-    public void processNewGame(int appId) {
+    public void processNewGame(int appId, GamePriceOffer offer) {
         try{
             long start = System.currentTimeMillis();
             logger.info("[SYNC-004] Processing new game in wishlist");
-
-            GamePriceOffer offer = steamPriceProvider.getPrice(appId);
 
             if (offer == null) return;
 
