@@ -38,7 +38,8 @@ public class RecentGamesService {
                                     String.format(
                                             "%.0f%%",
                                             gameLibraryEntry.getAchievements().getCompletionPercentage()
-                                    )
+                                    ),
+                                    gameLibraryEntry.getGameStatus().toString()
                             ))
                     .toList();
 

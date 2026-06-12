@@ -4,6 +4,7 @@ import com.example.steamtracker.clients.SheetsClient;
 import com.example.steamtracker.clients.StoreClient;
 import com.example.steamtracker.entities.GamePriceOffer;
 import com.example.steamtracker.entities.WishListEntry;
+import com.example.steamtracker.enums.GameStatus;
 import com.example.steamtracker.providers.WishlistProvider;
 import com.example.steamtracker.providers.steam.SteamPriceProvider;
 import com.example.steamtracker.services.Steam.SteamService;
@@ -114,7 +115,8 @@ public class WishlistService {
                             appId,
                             offer.getGameName(),
                             offer.getFinalPrice(),
-                            String.format("%.0f%%", offer.getDiscount())
+                            String.format("%.0f%%", offer.getDiscount()),
+                            GameStatus.WISHLIST.toString()
                             )
             );
 
@@ -185,14 +187,15 @@ public class WishlistService {
                             appId,
                             offer.getGameName(),
                             offer.getFinalPrice(),
-                            String.format("%.0f%%", offer.getDiscount())
+                            String.format("%.0f%%", offer.getDiscount()),
+                            GameStatus.WISHLIST.toString()
                     ));
 
             Thread.sleep(1000);
 
             sheetsClient.writeLocal(
                     SPREADSHEET_ID,
-                    "Test_WishList!A" + row + ":D" + row,
+                    "Test_WishList!A" + row + ":E" + row,
                     values
             );
 
@@ -214,7 +217,7 @@ public class WishlistService {
 
             sheetsClient.clearRow(
                     SPREADSHEET_ID,
-                    "Test_WishList!A" + row + ":D" + row);
+                    "Test_WishList!A" + row + ":E" + row);
 
             logger.info("Removed Game: {}", appId);
 

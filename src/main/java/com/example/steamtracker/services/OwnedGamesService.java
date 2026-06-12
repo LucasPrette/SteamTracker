@@ -41,7 +41,8 @@ public class OwnedGamesService {
                                             "%.0f%%",
                                             gameLibraryEntry.getAchievements()
                                                     .getCompletionPercentage()
-                                    )
+                                    ),
+                                    gameLibraryEntry.getGameStatus().toString()
                             )
                     ).toList();
 

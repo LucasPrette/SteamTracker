@@ -2,6 +2,7 @@ package com.example.steamtracker.providers.steam;
 
 import com.example.steamtracker.clients.SteamClient;
 import com.example.steamtracker.entities.GameLibraryEntry;
+import com.example.steamtracker.enums.GameStatus;
 import com.example.steamtracker.mappers.SteamGameMapper;
 import com.example.steamtracker.models.GameStats;
 import com.example.steamtracker.providers.AchievementProvider;
@@ -38,7 +39,8 @@ public class SteamLibraryProvider implements LibraryProvider {
             gameLibraryEntries.add(
                     steamGameMapper.toGameLibrary(
                             gameStats,
-                            progress
+                            progress,
+                            GameStatus.OWNED
                     ));
         }
         return gameLibraryEntries;
@@ -59,7 +61,8 @@ public class SteamLibraryProvider implements LibraryProvider {
                 recentGamesEntries.add(
                         steamGameMapper.toGameLibrary(
                                 game,
-                                progress
+                                progress,
+                                GameStatus.PLAYING
                         ));
             }
 
