@@ -51,9 +51,16 @@ public class WishlistService {
                     processNewGame(appId, offer);
 
                 } else {
+                    Integer row = rowMap.get(appId);
+
+                    if (row == null) {
+                        logger.warn("No row found for appId {}", appId);
+                        continue;
+                    }
+
                     logger.info("Updating game: {} Name: {}",appId, offer.getGameName());
                     updateWishlistGame(
-                            rowMap.get(appId),
+                            row,
                             appId,
                             offer
                     );
@@ -63,11 +70,19 @@ public class WishlistService {
             List<Integer> currentSteamIds = getCurrentWishlistAppIds(currentWishlist);
 
             for (Integer sheetAppId : sheetWishlist) {
+
+                Integer row = rowMap.get(sheetAppId);
+
+                if (row == null) {
+                    logger.warn("No row found for appId {}", sheetAppId);
+                    continue;
+                }
+
                 if(!currentSteamIds.contains(sheetAppId)) {
 
                     removeGameFromWishlist(
-                            rowMap.get(sheetAppId)
-                            ,sheetAppId
+                            row,
+                            sheetAppId
                     );
                 }
             }
@@ -177,11 +192,6 @@ public class WishlistService {
             long start = System.currentTimeMillis();
             logger.info("[SYNC-005] Starting update wishlist");
 
-            if (row == 0) {
-                logger.error("Update Failed row is null... Check findRowByAppId response...");
-                return;
-            }
-
             List<List<Object>> values = List.of(
                     List.of(
                             appId,
@@ -211,8 +221,6 @@ public class WishlistService {
         try{
             long start = System.currentTimeMillis();
             logger.info("[SYNC-006] Wishlist game removal starting");
-
-            if (row == 0) return;
 
             sheetsClient.clearRow(
                     SPREADSHEET_ID,
