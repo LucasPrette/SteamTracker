@@ -220,34 +220,6 @@ public class WishlistService {
                 );
     }
 
-    public void updateWishlistGame(int row, int appId, GamePriceOffer offer) {
-        try{
-            long start = System.currentTimeMillis();
-            logger.info("[SYNC-005] Starting update wishlist");
-
-            List<List<Object>> values = List.of(
-                    List.of(
-                            appId,
-                            offer.getGameName(),
-                            offer.getFinalPrice(),
-                            String.format("%.0f%%", offer.getDiscount()),
-                            GameStatus.WISHLIST.toString()
-                    ));
-
-            sheetsClient.writeLocal(
-                    SPREADSHEET_ID,
-                    "Test_WishList!A" + row + ":E" + row,
-                    values
-            );
-
-            long duration = System.currentTimeMillis() - start;
-            logger.info("[SYNC-005] Updating wishlist completed in {} ms"
-                    , duration);
-        }catch (Exception e) {
-            logger.error("[SYNC-005] Failed to update Wishlist game", e);
-        }
-    }
-
     public void removeGameFromWishlist(int row, int appId) {
         try{
             long start = System.currentTimeMillis();
