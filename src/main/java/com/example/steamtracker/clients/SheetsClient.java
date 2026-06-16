@@ -1,5 +1,6 @@
 package com.example.steamtracker.clients;
 
+import com.google.api.services.sheets.v4.model.BatchUpdateValuesRequest;
 import com.google.api.services.sheets.v4.model.ClearValuesRequest;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.api.services.sheets.v4.Sheets;
@@ -43,6 +44,28 @@ public class SheetsClient {
         } catch (Exception e) {
             logger.error("[SHEET-001] Authentication failed", e);
         }
+    }
+
+    public void batchWrite(
+            String spreadsheetId,
+            List<ValueRange> updates
+    ){
+        try{
+            BatchUpdateValuesRequest body = new BatchUpdateValuesRequest()
+                    .setValueInputOption("RAW")
+                    .setData(updates);
+
+            sheetsService.spreadsheets()
+                    .values()
+                    .batchUpdate(
+                            spreadsheetId,
+                            body
+                    )
+                    .execute();
+        } catch (Exception e) {
+            logger.error("[SHEET-007 Failed to batch write updates");
+        }
+
     }
     public void writeLocal(String spreadSheetId, String range, List<List<Object>> values){
         for(int attempt = 1; attempt <= 3; attempt ++) {

@@ -7,6 +7,7 @@ import com.example.steamtracker.entities.WishListEntry;
 import com.example.steamtracker.enums.GameStatus;
 import com.example.steamtracker.providers.WishlistProvider;
 import com.example.steamtracker.providers.steam.SteamPriceProvider;
+import com.google.api.services.sheets.v4.model.ValueRange;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +39,8 @@ public class WishlistService {
 
             List<WishListEntry> currentWishlist = wishlistProvider.getWishlist();
 
+            List<ValueRange> updates = new ArrayList<>();
+
             for(WishListEntry game : currentWishlist) {
                 int appId = game.getGame().getExternalID();
 
@@ -59,12 +62,18 @@ public class WishlistService {
                     }
 
                     logger.info("Updating game: {} Name: {}",appId, offer.getGameName());
-                    updateWishlistGame(
-                            row,
-                            appId,
-                            offer
-                    );
+
+                    ValueRange update = createWishlistUpdate(row, appId, offer);
+
+                    updates.add(update);
                 }
+            }
+
+            if(!updates.isEmpty()){
+                sheetsClient.batchWrite(
+                        SPREADSHEET_ID,
+                        updates
+                );
             }
 
             List<Integer> currentSteamIds = getCurrentWishlistAppIds(currentWishlist);
@@ -187,6 +196,30 @@ public class WishlistService {
         return rows;
     }
 
+    public ValueRange createWishlistUpdate(
+            int row,
+            int appId,
+            GamePriceOffer offer
+    ) {
+
+        return new ValueRange()
+                .setRange(
+                        "Test_WishList!A" + row + ":E" + row
+                )
+                .setValues(
+                        List.of(
+                                List.of(
+                                        appId,
+                                        offer.getGameName(),
+                                        offer.getFinalPrice(),
+                                        String.format("%.0f%%",
+                                                offer.getDiscount()),
+                                        GameStatus.WISHLIST.toString()
+                                )
+                        )
+                );
+    }
+
     public void updateWishlistGame(int row, int appId, GamePriceOffer offer) {
         try{
             long start = System.currentTimeMillis();
@@ -200,8 +233,6 @@ public class WishlistService {
                             String.format("%.0f%%", offer.getDiscount()),
                             GameStatus.WISHLIST.toString()
                     ));
-
-            Thread.sleep(1000);
 
             sheetsClient.writeLocal(
                     SPREADSHEET_ID,

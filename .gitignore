@@ -34,3 +34,5 @@ build/
 
 steamsync-495415-54fb9885729f.json
 src/main/resources/application-local.properties
+
+src/main/java/com/example/steamtracker/TestRunner.java
