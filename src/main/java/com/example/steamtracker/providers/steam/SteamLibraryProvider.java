@@ -7,6 +7,8 @@ import com.example.steamtracker.mappers.SteamGameMapper;
 import com.example.steamtracker.models.GameStats;
 import com.example.steamtracker.providers.AchievementProvider;
 import com.example.steamtracker.providers.LibraryProvider;
+import com.example.steamtracker.services.CompletionTierService;
+import com.example.steamtracker.services.GameStatusService;
 import com.example.steamtracker.services.Steam.SteamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -22,6 +24,8 @@ public class SteamLibraryProvider implements LibraryProvider {
     private final SteamService steamService;
     private final SteamGameMapper steamGameMapper;
     private final AchievementProvider achievementProvider;
+    private final GameStatusService gameStatusService;
+    private final CompletionTierService completionTierService;
 
 
     @Override
@@ -31,8 +35,16 @@ public class SteamLibraryProvider implements LibraryProvider {
         var parsedOwnedGames = steamService.parseOwnedGames(steamClient.getAllGames());
 
         for(GameStats gameStats : parsedOwnedGames) {
-
             var progress = achievementProvider.getAchievements(gameStats.getAppId());
+
+            var completionTier = completionTierService.determineCompletion(progress);
+
+            var status = gameStatusService.determineStatus(
+                    gameStats,
+                    progress,
+                    completionTier
+            );
+
 
             if(progress == null) continue;
 
@@ -40,7 +52,8 @@ public class SteamLibraryProvider implements LibraryProvider {
                     steamGameMapper.toGameLibrary(
                             gameStats,
                             progress,
-                            GameStatus.OWNED
+                            status,
+                            completionTier
                     ));
         }
         return gameLibraryEntries;
@@ -55,6 +68,14 @@ public class SteamLibraryProvider implements LibraryProvider {
         for(GameStats game : parsedRecentGames) {
             var progress = achievementProvider.getAchievements(game.getAppId());
 
+            var completionTier = completionTierService.determineCompletion(progress);
+
+            var status = gameStatusService.determineStatus(
+                    game,
+                    progress,
+                    completionTier
+            );
+
             if (progress == null) continue;
 
             if(game.getPlayTime2Weeks() > 0) {
@@ -62,7 +83,8 @@ public class SteamLibraryProvider implements LibraryProvider {
                         steamGameMapper.toGameLibrary(
                                 game,
                                 progress,
-                                GameStatus.PLAYING
+                                status,
+                                completionTier
                         ));
             }
 

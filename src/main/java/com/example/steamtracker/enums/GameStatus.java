@@ -2,8 +2,8 @@ package com.example.steamtracker.enums;
 
 public enum GameStatus {
     WISHLIST,
-    OWNED,
+    BACKLOG,
     PLAYING,
     COMPLETED,
-    DROPPED
+    ABANDONED
 }

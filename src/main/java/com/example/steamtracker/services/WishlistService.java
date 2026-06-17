@@ -27,6 +27,8 @@ public class WishlistService {
     private final SteamPriceProvider steamPriceProvider;
     private final WishlistProvider wishlistProvider;
     private static final Logger logger = LoggerFactory.getLogger(WishlistService.class);
+    private final GameStatusService gameStatusService;
+
 
     public void syncWishlist() {
         try{

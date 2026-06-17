@@ -15,6 +15,8 @@ import java.util.List;
 public class RecentGamesService {
     private final LibraryProvider libraryProvider;
     private final SheetsClient sheetsClient;
+    private final GameStatusService gameStatusService;
+
     private final String SPREADSHEET_ID = System.getenv("SPREADSHEET_ID");
 
     private static final Logger logger = LoggerFactory.getLogger(RecentGamesService.class);
@@ -39,13 +41,14 @@ public class RecentGamesService {
                                             "%.0f%%",
                                             gameLibraryEntry.getAchievements().getCompletionPercentage()
                                     ),
-                                    gameLibraryEntry.getGameStatus().toString()
+                                    gameLibraryEntry.getGameStatus().toString(),
+                                    gameLibraryEntry.getCompletionTier().toString()
                             ))
                     .toList();
 
             sheetsClient.clearRange(
                     SPREADSHEET_ID,
-                    "Test_Playing!A2:G"
+                    "Test_Playing!A2:H"
             );
 
             sheetsClient.writeLocal(
