@@ -8,6 +8,7 @@ import com.example.steamtracker.models.GameStats;
 import com.example.steamtracker.providers.AchievementProvider;
 import com.example.steamtracker.providers.LibraryProvider;
 import com.example.steamtracker.services.CompletionTierService;
+import com.example.steamtracker.services.GameStatusOverrideService;
 import com.example.steamtracker.services.GameStatusService;
 import com.example.steamtracker.services.Steam.SteamService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -26,6 +28,7 @@ public class SteamLibraryProvider implements LibraryProvider {
     private final AchievementProvider achievementProvider;
     private final GameStatusService gameStatusService;
     private final CompletionTierService completionTierService;
+    private final GameStatusOverrideService overrideService;
 
 
     @Override
@@ -34,19 +37,33 @@ public class SteamLibraryProvider implements LibraryProvider {
 
         var parsedOwnedGames = steamService.parseOwnedGames(steamClient.getAllGames());
 
+        Map<Integer, GameStatus> overrides =
+                overrideService.getOverrideMap();
+
         for(GameStats gameStats : parsedOwnedGames) {
             var progress = achievementProvider.getAchievements(gameStats.getAppId());
 
-            var completionTier = completionTierService.determineCompletion(progress);
-
-            var status = gameStatusService.determineStatus(
-                    gameStats,
-                    progress,
-                    completionTier
-            );
-
+            GameStatus override =
+                    overrides.get(
+                            gameStats.getAppId()
+                    );
 
             if(progress == null) continue;
+
+            var completionTier = completionTierService.determineCompletion(progress);
+
+            GameStatus status;
+
+            if(override != null) {
+                status = override;
+            } else {
+                status = gameStatusService.determineStatus(
+                        gameStats,
+                        progress,
+                        completionTier
+                );
+            }
+
 
             gameLibraryEntries.add(
                     steamGameMapper.toGameLibrary(

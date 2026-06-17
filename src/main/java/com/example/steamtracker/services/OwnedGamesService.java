@@ -15,7 +15,6 @@ import java.util.List;
 public class OwnedGamesService {
     private final SheetsClient sheetsClient;
     private final LibraryProvider libraryProvider;
-    private final GameStatusService gameStatusService;
 
     private final String SPREADSHEET_ID = System.getenv("SPREADSHEET_ID");
     private static final Logger logger = LoggerFactory.getLogger(OwnedGamesService.class);
