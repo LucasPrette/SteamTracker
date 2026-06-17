@@ -6,7 +6,7 @@ The project aims to provide a unified gaming hub for tracking game libraries, ac
 ## Features
 
 * Synchronize owned games
-* Track achievement progress and completion percentage
+* Track achievement progress and completion tiers
 * Monitor recently played games
 * Synchronize wishlist items
 * Track game prices and discounts
@@ -62,6 +62,41 @@ This architecture allows future support for multiple gaming platforms without ma
 
 * Dashboard Visualization
 * Temporary Data Persistence Layer
+
+## Gaming Hub Features
+
+SteamTracker goes beyond simple data synchronization by providing game classification and tracking features designed to help organize large game libraries.
+
+### Automatic Status Engine
+
+Owned games are automatically categorized based on playtime, achievement progress, and recent activity.
+
+Available statuses:
+
+* BACKLOG — Owned but not meaningfully started
+* PLAYING — Recently active
+* COMPLETED — Considered completed based on achievement and activity analysis
+* ABANDONED — Started but no longer actively played
+* WISHLIST — Games not yet owned
+
+### Completion Tiers
+
+SteamTracker evaluates achievement progress and assigns a completion tier to each game.
+
+| Achievement Progress | Tier          |
+| -------------------- | ------------- |
+| 0%                   | UNSTARTED     |
+| 1% - 39%             | IN_PROGRESS   |
+| 40% - 74%            | STORY_CLEARED |
+| 75% - 99%            | MASTERED      |
+| 100%                 | PERFECTED     |
+
+### Manual Status Overrides
+
+Automatic classification can be overridden by the user.
+
+This allows users to manually correct classifications for games where achievement data does not accurately reflect actual completion progress.
+
 
 ## Motivation
 
@@ -171,11 +206,9 @@ The application uses scheduled jobs to synchronize gaming data with Google Sheet
 
 ## Supported Platforms
 
-| Platform | Library | Achievements | Wishlist | Prices |
-|-----------|----------|-------------|----------|---------|
 | Steam | ✅ | ✅ | ✅ | ✅ |
-| GOG | 🚧 | 🚧 | 🚧 | 🚧 |
-| Xbox | 🚧 | 🚧 | 🚧 | 🚧 |
+| GOG | Planned | Planned | Planned | Planned |
+| Xbox | Planned | Planned | Planned | Planned |
 
 ## Roadmap
 
@@ -184,6 +217,9 @@ The application uses scheduled jobs to synchronize gaming data with Google Sheet
 * [x] Wishlist Synchronization
 * [x] Price Monitoring
 * [x] Provider-Based Architecture
+* [x] Automatic Status Engine
+* [x] Completion Tier Classification
+* [x] Manual Status Overrides
 * [ ] IsThereAnyDeal Integration
 * [ ] GOG Support
 * [ ] Xbox Support
