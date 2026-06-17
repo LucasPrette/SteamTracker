@@ -7,6 +7,8 @@ The project aims to provide a unified gaming hub for tracking game libraries, ac
 
 * Synchronize owned games
 * Track achievement progress and completion tiers
+* Automatically classify games by status
+* Override game statuses manually
 * Monitor recently played games
 * Synchronize wishlist items
 * Track game prices and discounts
@@ -206,9 +208,11 @@ The application uses scheduled jobs to synchronize gaming data with Google Sheet
 
 ## Supported Platforms
 
-| Steam | ✅ | ✅ | ✅ | ✅ |
-| GOG | Planned | Planned | Planned | Planned |
-| Xbox | Planned | Planned | Planned | Planned |
+| Platform | Library | Achievements | Wishlist | Prices |
+|----------|---------|--------------|----------|--------|
+| Steam    | ✅      | ✅           | ✅       | ✅     |
+| GOG      | Planned | Planned      | Planned  | Planned|
+| Xbox     | Planned | Planned      | Planned  | Planned|
 
 ## Roadmap
 
