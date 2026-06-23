@@ -12,7 +12,8 @@ public class GameStatusService {
     public GameStatus determineStatus (
             GameStats game,
             AchievementProgress progress,
-            CompletionTier completionTier
+            CompletionTier completionTier,
+            Boolean recentlyPlayed
     ) {
         if(game.getPlayTime2Weeks() > 0) {
             return GameStatus.PLAYING;

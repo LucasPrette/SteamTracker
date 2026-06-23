@@ -17,6 +17,8 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -35,13 +37,20 @@ public class SteamLibraryProvider implements LibraryProvider {
     public List<GameLibraryEntry> getOwnedGames() {
         List<GameLibraryEntry> gameLibraryEntries = new ArrayList<>();
 
-        var parsedOwnedGames = steamService.parseOwnedGames(steamClient.getAllGames());
+        var recentGameIds = getRecentGameIds();
+
+       var parsedOwnedGames = steamService.parseOwnedGames(steamClient.getAllGames());
 
         Map<Integer, GameStatus> overrides =
                 overrideService.getOverrideMap();
 
         for(GameStats gameStats : parsedOwnedGames) {
             var progress = achievementProvider.getAchievements(gameStats.getAppId());
+
+            boolean recentlyPlayed =
+                    recentGameIds.contains(
+                            gameStats.getAppId()
+                    );
 
             GameStatus override =
                     overrides.get(
@@ -60,7 +69,8 @@ public class SteamLibraryProvider implements LibraryProvider {
                 status = gameStatusService.determineStatus(
                         gameStats,
                         progress,
-                        completionTier
+                        completionTier,
+                        recentlyPlayed
                 );
             }
 
@@ -87,12 +97,6 @@ public class SteamLibraryProvider implements LibraryProvider {
 
             var completionTier = completionTierService.determineCompletion(progress);
 
-            var status = gameStatusService.determineStatus(
-                    game,
-                    progress,
-                    completionTier
-            );
-
             if (progress == null) continue;
 
             if(game.getPlayTime2Weeks() > 0) {
@@ -100,7 +104,7 @@ public class SteamLibraryProvider implements LibraryProvider {
                         steamGameMapper.toGameLibrary(
                                 game,
                                 progress,
-                                status,
+                                GameStatus.PLAYING,
                                 completionTier
                         ));
             }
@@ -108,4 +112,17 @@ public class SteamLibraryProvider implements LibraryProvider {
         }
         return recentGamesEntries;
     }
+
+    public Set<Integer> getRecentGameIds() {
+
+        List<GameStats> recentGames =
+                steamService.parseRecentGames(
+                        steamClient.getRecentPlayedGames()
+                );
+
+        return recentGames.stream()
+                .map(GameStats::getAppId)
+                .collect(Collectors.toSet());
+    }
+
 }

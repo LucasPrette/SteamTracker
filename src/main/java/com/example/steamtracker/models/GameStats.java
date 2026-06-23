@@ -1,8 +1,5 @@
 package com.example.steamtracker.models;
 
-
-import com.example.steamtracker.enums.CompletionTier;
-
 public class GameStats {
     private int appId;
     private String name;
