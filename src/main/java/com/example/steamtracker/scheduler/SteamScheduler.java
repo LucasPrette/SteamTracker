@@ -1,5 +1,6 @@
 package com.example.steamtracker.scheduler;
 
+import com.example.steamtracker.services.GamingStatsSheetService;
 import com.example.steamtracker.services.OwnedGamesService;
 import com.example.steamtracker.services.RecentGamesService;
 import com.example.steamtracker.services.WishlistService;
@@ -15,6 +16,7 @@ public class SteamScheduler {
     private final WishlistService wishlistService;
     private final OwnedGamesService ownedGamesService;
     private final RecentGamesService recentGamesService;
+    private final GamingStatsSheetService gamingStatsSheetService;
 
     private static final Logger logger = LoggerFactory.getLogger(SteamScheduler.class);
 
@@ -62,5 +64,18 @@ public class SteamScheduler {
     }
 
 
+    @Scheduled(cron ="${scheduler.gaming-stats.cron}",
+            zone = "America/Sao_Paulo")
+    public void syncGamingStats() {
+        try{
+            logger.info("[SCHED-004] Triggering Gaming Stats Scheduler");
+
+            gamingStatsSheetService.syncGamingStats();
+
+            logger.info("[SCHED-004] Gaming Stats execution finished");
+        } catch (Exception e) {
+            logger.error("[SCHED-004] Gaming Stats scheduler execution failed");
+        }
+    }
 
 }
