@@ -39,7 +39,7 @@ public class SteamLibraryProvider implements LibraryProvider {
 
         var recentGameIds = getRecentGameIds();
 
-       var parsedOwnedGames = steamService.parseOwnedGames(steamClient.getAllGames());
+        var parsedOwnedGames = steamService.parseOwnedGames(steamClient.getAllGames());
 
         Map<Integer, GameStatus> overrides =
                 overrideService.getOverrideMap();
@@ -68,7 +68,6 @@ public class SteamLibraryProvider implements LibraryProvider {
             } else {
                 status = gameStatusService.determineStatus(
                         gameStats,
-                        progress,
                         completionTier,
                         recentlyPlayed
                 );
