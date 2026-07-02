@@ -1,9 +1,6 @@
 package com.example.steamtracker.scheduler;
 
-import com.example.steamtracker.services.GamingStatsSheetService;
-import com.example.steamtracker.services.OwnedGamesService;
-import com.example.steamtracker.services.RecentGamesService;
-import com.example.steamtracker.services.WishlistService;
+import com.example.steamtracker.services.*;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +14,7 @@ public class SteamScheduler {
     private final OwnedGamesService ownedGamesService;
     private final RecentGamesService recentGamesService;
     private final GamingStatsSheetService gamingStatsSheetService;
+    private final NearCompletionSheetService nearCompletionSheetService;
 
     private static final Logger logger = LoggerFactory.getLogger(SteamScheduler.class);
 
@@ -66,7 +64,7 @@ public class SteamScheduler {
 
     @Scheduled(cron ="${scheduler.gaming-stats.cron}",
             zone = "America/Sao_Paulo")
-    public void syncGamingStats() {
+    public void syncGamingStatsJob() {
         try{
             logger.info("[SCHED-004] Triggering Gaming Stats Scheduler");
 
@@ -75,6 +73,27 @@ public class SteamScheduler {
             logger.info("[SCHED-004] Gaming Stats execution finished");
         } catch (Exception e) {
             logger.error("[SCHED-004] Gaming Stats scheduler execution failed");
+        }
+    }
+
+    @Scheduled(cron = "${scheduler.near-completion.cron}",
+    zone = "America/Sao_Paulo")
+    public void syncNearCompletionJob(){
+        try {
+            logger.info(
+                    "[SCHED-005] Triggering Near Completion scheduler"
+            );
+
+            nearCompletionSheetService.syncNearCompletion();
+
+            logger.info(
+                    "[SCHED-005] Near Completion execution finished"
+            );
+        } catch (Exception e) {
+            logger.error(
+                    "[SCHED-005] Near Completion scheduler execution failed",
+                    e
+            );
         }
     }
 
