@@ -1,0 +1,48 @@
+[33m928962d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m Add gaming statistics dashboard synchronization
+[33m62c7e39[m Refactor status engine to use recent play activity
+[33m30017e9[m Refactor status engine to use recent play activity
+[33mefbef2a[m Add gaming statistics generation service
+[33m8ddb239[m[33m ([m[1;31morigin/main[m[33m)[m Enhance README with gaming hub documentation and feature updates
+[33m1b309d1[m Enhance README with gaming hub features and project documentation
+[33m4f30acd[m Implement status override system with cached sheet lookups
+[33md23bb3b[m Add automatic game status and completion tier classification
+[33me3bb2b8[m Implement batch updates for wishlist synchronization
+[33mcba23d8[m Implement batch updates for wishlist synchronization
+[33m89193a8[m Optimize wishlist synchronization using cached row lookups
+[33m9488e8a[m Optimize wishlist row lookup using cached row map
+[33m19ed1e5[m Remove duplicate price lookups in wishlist sync
+[33md83d562[m Add game status tracking across library views
+[33m7355b9d[m Improve project documentation and setup guide
+[33md075eb2[m Merge branch 'main' of https://github.com/LucasPrette/SteamTracker
+[33m698e288[m Refactor dependency injection and simplify wishlist processing
+[33me75f200[m Add MIT License to the project
+[33m50f4e7a[m Add project documentation and clean repository configuration
+[33m5166818[m Remove local configuration from version control
+[33m0bc0ca5[m Add wishlist provider abstraction
+[33mdc4905e[m Extract achievement provider and simplify Steam services
+[33m1245a47[m Add platform support to game entities
+[33m75bed66[m Externalize scheduler cron configuration
+[33mbdaf6f9[m Introduce LibraryProvider abstraction for game library Synchronization
+[33md422006[m Introduce provider-based pricing architecture
+[33m20e789c[m Add timeout configuration for external API requests
+[33mc0f33e6[m Add retry mechanism for Steam API requests
+[33m44c79db[m Add retry mechanism for Steam API requests
+[33m156735d[m Add retry mechanism for Steam API requests
+[33m648544c[m fix scheduling times
+[33m3396e60[m Add retry mechanism for Steam API requests
+[33m5ac35d7[m Add scheduler lifecycle logging and error handling
+[33m6a8fe04[m Add synchronization lifecycle and execution duration logging
+[33m4bb928a[m Refactor API clients to use shared HttpClient instances
+[33m2954f4a[m Refactor application logging with structured error codes
+[33m97f22b7[m Refactor sync services to use snapshot-based sheet updates
+[33m7ccd489[m Refactor recent games sync to use domain entities and mapper layer
+[33m1d2d522[m Refactor: owned games sync to use domain entities and mapper layer
+[33mc3790bf[m Refactor project architecture with domain models and provider interfaces
+[33m7f4a0e0[m refactor: hours formating for better filtering and data collection
+[33m22b4104[m refactor: parsing price for wishlist and scheduler time
+[33m45fc3f7[m feat: remove wishlist games
+[33m77b8525[m feat: update wishlist games
+[33m3cc2726[m Adjust scheduler intervals for sync testing
+[33m8ab0ef2[m Add scheduled sync jobs with Sao Paulo timezone configuration
+[33m6669d53[m Externalize Google Sheets credentials from project resources
+[33maeeb8f4[m Initial Steam tracker backend implementation
