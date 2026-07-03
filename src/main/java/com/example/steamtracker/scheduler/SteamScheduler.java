@@ -1,6 +1,10 @@
 package com.example.steamtracker.scheduler;
 
 import com.example.steamtracker.services.*;
+import com.example.steamtracker.services.sheet.BacklogAssistantSheetService;
+import com.example.steamtracker.services.sheet.GamingStatsSheetService;
+import com.example.steamtracker.services.sheet.NearCompletionSheetService;
+import com.example.steamtracker.services.sheet.ResumeAssistantSheetService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +19,8 @@ public class SteamScheduler {
     private final RecentGamesService recentGamesService;
     private final GamingStatsSheetService gamingStatsSheetService;
     private final NearCompletionSheetService nearCompletionSheetService;
+    private final BacklogAssistantSheetService backlogAssistantSheetService;
+    private final ResumeAssistantSheetService resumeAssistantSheetService;
 
     private static final Logger logger = LoggerFactory.getLogger(SteamScheduler.class);
 
@@ -93,6 +99,48 @@ public class SteamScheduler {
             logger.error(
                     "[SCHED-005] Near Completion scheduler execution failed",
                     e
+            );
+        }
+    }
+
+    @Scheduled(cron = "${scheduler.backlog-assistant.cron}",
+            zone = "America/Sao_Paulo")
+    public void syncBacklogAssistantJob() {
+        try{
+            logger.info(
+                    "[SCHED-006] Triggering Backlog Assistant Scheduler"
+            );
+
+            backlogAssistantSheetService.syncBacklogAssistant();
+
+            logger.info(
+                    "[SCHED-006] Backlog Assistant Scheduler finished"
+            );
+
+        }catch (Exception e ) {
+            logger.error("[SCHED-006] Backlog Assistant Scheduler failed"
+                    , e
+            );
+        }
+    }
+
+    @Scheduled(cron = "${scheduler.resume-assistant.cron}",
+            zone = "America/Sao_Paulo")
+    public void syncResumeAssistantJob() {
+        try{
+            logger.info(
+                    "[SCHED-007] Triggering Resume Assistant Scheduler"
+            );
+
+            resumeAssistantSheetService.syncResumeAssistant();
+
+            logger.info(
+                    "[SCHED-006] Resume Assistant Scheduler finished"
+            );
+
+        }catch (Exception e ) {
+            logger.error("[SCHED-006] Resume Assistant Scheduler failed"
+                    , e
             );
         }
     }

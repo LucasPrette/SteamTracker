@@ -1,4 +1,4 @@
-package com.example.steamtracker.services.Steam;
+package com.example.steamtracker.services.steam;
 
 import com.example.steamtracker.entities.AchievementProgress;
 import com.example.steamtracker.models.GameSearchResult;
