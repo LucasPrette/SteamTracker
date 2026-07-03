@@ -51,13 +51,13 @@ public class BacklogAssistantSheetService {
 
         sheetsClient.clearRange(
                 SPREADSHEET_ID,
-                "Backlog_Assistant!A2"
+                "Backlog_Assistant!A2F"
         );
 
         if(!values.isEmpty()) {
             sheetsClient.writeLocal(
                     SPREADSHEET_ID,
-                    "Backlog_Assistant!A2:F",
+                    "Backlog_Assistant!A2",
                     values
             );
         }

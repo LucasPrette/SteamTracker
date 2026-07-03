@@ -37,13 +37,13 @@ public class NearCompletionSheetService {
 
         sheetsClient.clearRange(
                 SPREADSHEET_ID,
-                "Near_Completion!A2"
+                "Near_Completion!A2:F"
         );
 
         if(!values.isEmpty()) {
             sheetsClient.writeLocal(
                     SPREADSHEET_ID,
-                    "Near_Completion!A2:F",
+                    "Near_Completion!A2",
                     values
             );
         }

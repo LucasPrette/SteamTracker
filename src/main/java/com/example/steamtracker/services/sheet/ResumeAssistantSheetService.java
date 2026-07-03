@@ -37,13 +37,13 @@ public class ResumeAssistantSheetService {
 
         sheetsClient.clearRange(
                 SPREADSHEET_ID,
-                "Resume_Assistant!A2"
+                "Resume_Assistant!A2:F"
         );
 
         if(!values.isEmpty()) {
             sheetsClient.writeLocal(
                     SPREADSHEET_ID,
-                    "Resume_Assistant!A2:F",
+                    "Resume_Assistant!A2",
                     values
             );
         }
