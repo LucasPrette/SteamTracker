@@ -1,10 +1,7 @@
 package com.example.steamtracker.scheduler;
 
 import com.example.steamtracker.services.*;
-import com.example.steamtracker.services.sheet.BacklogAssistantSheetService;
-import com.example.steamtracker.services.sheet.GamingStatsSheetService;
-import com.example.steamtracker.services.sheet.NearCompletionSheetService;
-import com.example.steamtracker.services.sheet.ResumeAssistantSheetService;
+import com.example.steamtracker.services.sheet.*;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +18,7 @@ public class SteamScheduler {
     private final NearCompletionSheetService nearCompletionSheetService;
     private final BacklogAssistantSheetService backlogAssistantSheetService;
     private final ResumeAssistantSheetService resumeAssistantSheetService;
+    private final GamingAdvisorSheetService gamingAdvisorSheetService;
 
     private static final Logger logger = LoggerFactory.getLogger(SteamScheduler.class);
 
@@ -135,11 +133,32 @@ public class SteamScheduler {
             resumeAssistantSheetService.syncResumeAssistant();
 
             logger.info(
-                    "[SCHED-006] Resume Assistant Scheduler finished"
+                    "[SCHED-007] Resume Assistant Scheduler finished"
             );
 
         }catch (Exception e ) {
-            logger.error("[SCHED-006] Resume Assistant Scheduler failed"
+            logger.error("[SCHED-007] Resume Assistant Scheduler failed"
+                    , e
+            );
+        }
+    }
+
+    @Scheduled(cron = "${scheduler.gaming-advisor.cron}",
+            zone = "America/Sao_Paulo")
+    public void syncGamingAdvisorJob() {
+        try{
+            logger.info(
+                    "[SCHED-008] Triggering Gaming Advisor Scheduler"
+            );
+
+            gamingAdvisorSheetService.syncGamingAdvisor();
+
+            logger.info(
+                    "[SCHED-008] Gaming Advisor Scheduler finished"
+            );
+
+        }catch (Exception e ) {
+            logger.error("[SCHED-008] Gaming Advisor Scheduler failed"
                     , e
             );
         }

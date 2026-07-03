@@ -31,5 +31,24 @@ public class NearCompletionService {
                 )
                 .toList();
     }
+
+    public List<GameLibraryEntry> findNearCompletionGames(
+            List<GameLibraryEntry> games
+    ) {
+        return games
+                .stream()
+                .filter(game -> game.getAchievements() != null)
+                .filter(game -> game.getAchievements().getTotal() > 0)
+                .filter(game ->
+                        game.getCompletionTier() == CompletionTier.MASTERED)
+                .sorted(
+                        Comparator.comparingDouble(
+                                (GameLibraryEntry game) -> game.getAchievements()
+                                        .getCompletionPercentage()
+                        ).reversed()
+                )
+                .toList();
+    }
+
 }
 

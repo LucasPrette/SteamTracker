@@ -27,4 +27,19 @@ public class BacklogAssistantService {
                 )
                 .toList();
     }
+
+    public List<GameLibraryEntry> findBacklogRecommendation(
+            List<GameLibraryEntry> games
+    ) {
+        return games
+                .stream()
+                .filter(game ->
+                        game.getGameStatus() == GameStatus.BACKLOG)
+                .sorted(Comparator.comparingInt
+                        (
+                                GameLibraryEntry::getPlaytimeForever
+                        )
+                )
+                .toList();
+    }
 }

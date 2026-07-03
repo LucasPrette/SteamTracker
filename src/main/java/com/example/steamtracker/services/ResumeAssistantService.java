@@ -38,4 +38,27 @@ public class ResumeAssistantService {
                 )
                 .toList();
     }
+
+    public List<GameLibraryEntry> findGamesToResume(
+            List<GameLibraryEntry> games
+    ) {
+        return games
+                .stream()
+                .filter(game ->
+                        game.getCompletionTier()
+                                == CompletionTier.IN_PROGRESS
+                )
+                .filter(game ->
+                        game.getGameStatus() == GameStatus.ABANDONED
+                                || game.getGameStatus() == GameStatus.BACKLOG)
+                .filter(game -> game.getAchievements() != null)
+                .filter(game -> game.getAchievements().getTotal() > 0)
+                .sorted(
+                        Comparator.comparingDouble(
+                                (GameLibraryEntry game) ->
+                                        game.getAchievements().getCompletionPercentage()
+                        ).reversed()
+                )
+                .toList();
+    }
 }
