@@ -1,7 +1,8 @@
-package com.example.steamtracker.services;
+package com.example.steamtracker.services.sheet;
 
 import com.example.steamtracker.clients.SheetsClient;
 import com.example.steamtracker.entities.GameLibraryEntry;
+import com.example.steamtracker.services.NearCompletionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,14 +30,14 @@ public class NearCompletionSheetService {
                         ),
                         game.getAchievements().getUnlocked() + "/" + game.getAchievements().getTotal(),
                         String.format("%.1f",
-                                game.getPlaytimeForever() / 60.0),
+                                (double)game.getPlaytimeForever()),
                         game.getGameStatus().toString()
                 ))
                 .toList();
 
         sheetsClient.clearRange(
                 SPREADSHEET_ID,
-                "Near_Completion!A2:F"
+                "Near_Completion!A2"
         );
 
         if(!values.isEmpty()) {

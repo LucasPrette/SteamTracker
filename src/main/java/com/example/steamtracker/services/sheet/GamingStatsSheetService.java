@@ -1,7 +1,8 @@
-package com.example.steamtracker.services;
+package com.example.steamtracker.services.sheet;
 
 import com.example.steamtracker.clients.SheetsClient;
 import com.example.steamtracker.models.GamingStats;
+import com.example.steamtracker.services.GamingStatsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
