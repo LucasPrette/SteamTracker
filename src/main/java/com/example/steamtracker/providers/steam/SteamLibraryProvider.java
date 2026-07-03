@@ -10,7 +10,7 @@ import com.example.steamtracker.providers.LibraryProvider;
 import com.example.steamtracker.services.CompletionTierService;
 import com.example.steamtracker.services.GameStatusOverrideService;
 import com.example.steamtracker.services.GameStatusService;
-import com.example.steamtracker.services.Steam.SteamService;
+import com.example.steamtracker.services.steam.SteamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

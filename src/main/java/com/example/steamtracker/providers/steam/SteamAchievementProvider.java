@@ -3,9 +3,8 @@ package com.example.steamtracker.providers.steam;
 import com.example.steamtracker.clients.SteamClient;
 import com.example.steamtracker.entities.AchievementProgress;
 import com.example.steamtracker.providers.AchievementProvider;
-import com.example.steamtracker.services.Steam.SteamService;
+import com.example.steamtracker.services.steam.SteamService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
