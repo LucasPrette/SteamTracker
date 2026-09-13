@@ -51,7 +51,7 @@ public class BacklogAssistantSheetService {
 
         sheetsClient.clearRange(
                 SPREADSHEET_ID,
-                "Backlog_Assistant!A2F"
+                "Backlog_Assistant!A2:F"
         );
 
         if(!values.isEmpty()) {
