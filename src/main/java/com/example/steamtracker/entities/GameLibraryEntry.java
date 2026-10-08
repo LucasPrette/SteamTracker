@@ -4,6 +4,8 @@ import com.example.steamtracker.enums.CompletionTier;
 import com.example.steamtracker.enums.GameStatus;
 import lombok.*;
 
+import java.time.Instant;
+
 
 @Getter
 @Setter
@@ -16,4 +18,5 @@ public class GameLibraryEntry {
     private AchievementProgress achievements;
     private GameStatus gameStatus;
     private CompletionTier completionTier;
+    private long lastPlayed;
 }

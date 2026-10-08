@@ -25,6 +25,7 @@ public class SteamGameMapper {
                 gameStats.getPlayTime2Weeks(),
                 progress,
                 status,
-                tier);
+                tier,
+                gameStats.getLastPlayed());
     }
 }

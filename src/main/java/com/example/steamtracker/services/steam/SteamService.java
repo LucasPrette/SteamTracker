@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
+import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,13 +62,14 @@ public class SteamService {
                 String gameName = game.path("name").asString();
                 int playTimeForever = game.path("playtime_forever").asInt() / 60;
                 int playTime2Weeks = game.path("playtime_2weeks").asInt() / 60;
+                long lastPlayed = game.path("rtime_last_played").asLong();
 
-                GameStats gameStats = new GameStats(appId, gameName, playTimeForever, playTime2Weeks);
+                GameStats gameStats = new GameStats(appId, gameName, playTimeForever, playTime2Weeks, lastPlayed);
                 gameList.add(gameStats);
             }
 
         }catch (Exception e){
-            logger.error("[PARSE-001] Failed to parse recent games",e);
+            logger.error("[PARSE-003] Failed to parse recent games",e);
             return null;
         }
 
@@ -87,8 +89,9 @@ public class SteamService {
                 int appId = game.path("appid").asInt();
                 String gameName = game.path("name").asString();
                 int playtimeTotal = game.path("playtime_forever").asInt() / 60;
+                long lastPlayed = game.path("rtime_last_played").asLong();
 
-                ownedGamesList.add(new GameStats(appId,gameName,playtimeTotal, 0));
+                ownedGamesList.add(new GameStats(appId,gameName,playtimeTotal, 0, lastPlayed));
             }
         }catch (Exception e){
             logger.error("[PARSE-002] Failed to parse Owned Games", e);
