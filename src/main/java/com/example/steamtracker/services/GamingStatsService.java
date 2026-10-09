@@ -15,9 +15,12 @@ import java.util.List;
 public class GamingStatsService {
 
     private final LibraryProvider libraryProvider;
+    private final GameExclusionService gameExclusionService;
 
     public GamingStats generateStats() {
-        List<GameLibraryEntry> games = libraryProvider.getOwnedGames();
+        List<GameLibraryEntry> games = gameExclusionService.filterIncludedGames(
+                libraryProvider.getOwnedGames()
+        );
 
         GamingStats stats = new GamingStats();
 
@@ -86,7 +89,7 @@ public class GamingStatsService {
 
         stats.setTotalOwnedGames(games.size());
 
-        if(stats.getTotalOwnedGames() > 0) {
+        if (stats.getTotalOwnedGames() > 0) {
             stats.setCompletionRate(
                     (double) stats.getCompletedGames()
                             / stats.getTotalOwnedGames()

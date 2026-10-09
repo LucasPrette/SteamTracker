@@ -16,18 +16,19 @@ import java.util.List;
 public class ResumeAssistantService {
 
     private final LibraryProvider libraryProvider;
-
+    private final GameExclusionService gameExclusionService;
 
     public List<GameLibraryEntry> findGamesToResume() {
-        return libraryProvider.getOwnedGames()
+        return gameExclusionService.filterIncludedGames(
+                        libraryProvider.getOwnedGames())
                 .stream()
                 .filter(game ->
                         game.getCompletionTier()
-                        == CompletionTier.IN_PROGRESS
+                                == CompletionTier.IN_PROGRESS
                 )
                 .filter(game ->
                         game.getGameStatus() == GameStatus.ABANDONED
-                        || game.getGameStatus() == GameStatus.BACKLOG)
+                                || game.getGameStatus() == GameStatus.BACKLOG)
                 .filter(game -> game.getAchievements() != null)
                 .filter(game -> game.getAchievements().getTotal() > 0)
                 .sorted(

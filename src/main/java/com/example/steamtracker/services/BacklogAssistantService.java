@@ -14,9 +14,11 @@ import java.util.List;
 public class BacklogAssistantService {
 
     private final LibraryProvider libraryProvider;
+    private final GameExclusionService gameExclusionService;
 
     public List<GameLibraryEntry> findBacklogRecommendation() {
-        return libraryProvider.getOwnedGames()
+        return gameExclusionService.filterIncludedGames(
+                        libraryProvider.getOwnedGames())
                 .stream()
                 .filter(game ->
                         game.getGameStatus() == GameStatus.BACKLOG)

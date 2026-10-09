@@ -15,9 +15,11 @@ import java.util.List;
 public class NearCompletionService {
 
     private final LibraryProvider libraryProvider;
+    private final GameExclusionService gameExclusionService;
 
     public List<GameLibraryEntry> findNearCompletionGames() {
-        return libraryProvider.getOwnedGames()
+        return gameExclusionService.filterIncludedGames(
+                        libraryProvider.getOwnedGames())
                 .stream()
                 .filter(game -> game.getAchievements() != null)
                 .filter(game -> game.getAchievements().getTotal() > 0)

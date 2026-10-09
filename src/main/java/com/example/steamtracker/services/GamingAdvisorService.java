@@ -17,9 +17,12 @@ public class GamingAdvisorService {
     private final NearCompletionService nearCompletionService;
     private final ResumeAssistantService resumeAssistantService;
     private final BacklogAssistantService backlogAssistantService;
+    private final GameExclusionService gameExclusionService;
 
     public List<GamingAdvice> generateAdvice() {
-        List<GameLibraryEntry> games = libraryProvider.getOwnedGames();
+        List<GameLibraryEntry> games = gameExclusionService.filterIncludedGames(
+                libraryProvider.getOwnedGames()
+        );
 
         List<GamingAdvice> advice = new ArrayList<>();
 
@@ -67,7 +70,7 @@ public class GamingAdvisorService {
     }
 
     private double getProgress(GameLibraryEntry game) {
-        if(game.getAchievements() == null) {
+        if (game.getAchievements() == null) {
             return 0;
         }
 
